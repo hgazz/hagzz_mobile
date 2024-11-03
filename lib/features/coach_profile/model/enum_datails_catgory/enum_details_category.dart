@@ -1,0 +1,1 @@
+enum CoachDetailsCategory { upcoming, past }

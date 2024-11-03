@@ -1,0 +1,1 @@
+enum FollowingCategory { places, coaches }
