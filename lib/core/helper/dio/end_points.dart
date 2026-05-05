@@ -1,5 +1,5 @@
 abstract class EndPoints {
-  static const String baseUrl = "https://api.hagzz.com/api/";
+  static const String baseUrl = "https://api.hagzz.el7lm.com/api/";
   static const String baseUrlTemp = "https://ipv2.hagzz.com/api/";
   static const String login = "login";
   static const String logout = "logout";
