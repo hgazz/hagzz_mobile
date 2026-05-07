@@ -27,12 +27,15 @@ if (flutterVersionName == null) {
 }
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
+if (!keystorePropertiesFile.exists()) {
+    keystorePropertiesFile = rootProject.file('hagzz/key.properties')
+}
 if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 android {
     namespace "com.unlimitedhagzz.hagzz"
-    compileSdkVersion 34
+    compileSdkVersion 35
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -54,9 +57,9 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 23
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode 24
-        versionName "1.0.1"
+        targetSdkVersion 35
+        versionCode 25
+        versionName "1.0.10"
 
     }
 
@@ -65,7 +68,7 @@ android {
         release {
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
-            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
+            storeFile keystoreProperties['storeFile'] ? new File(keystorePropertiesFile.parentFile, keystoreProperties['storeFile'].trim()) : null
             storePassword keystoreProperties['storePassword']
         }
     }
