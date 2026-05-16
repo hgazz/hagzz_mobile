@@ -35,7 +35,7 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
     //       },
     //     ),
     //   )
-    //   ..loadRequest(Uri.parse('https://hagzz.com/termsAndConditions.html'));
+    //   ..loadRequest(Uri.parse('https://hagzz.el7lm.com/termsAndConditions.html'));
 
     super.initState();
   }
@@ -53,7 +53,7 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
                 title: ""),
             Expanded(
                 child: WebView(
-              initialUrl: 'https://hagzz.com/termsAndConditions.html',
+              initialUrl: 'https://hagzz.el7lm.com/termsAndConditions.html',
               javascriptMode: JavascriptMode.unrestricted,
               onWebViewCreated: (value) {
                 AppFunctions.logPrint(message: "Valueee: ${value.toString()}");

@@ -35,7 +35,7 @@ class _TermsAndConditionsScreenState extends State<PrivacyPolicyScreen> {
     //       },
     //     ),
     //   )
-    //   ..loadRequest(Uri.parse('https://hagzz.com/privacy.html'));
+    //   ..loadRequest(Uri.parse('https://hagzz.el7lm.com/privacy.html'));
 
     super.initState();
   }
@@ -53,7 +53,7 @@ class _TermsAndConditionsScreenState extends State<PrivacyPolicyScreen> {
                 title: ""),
             Expanded(
               child: WebView(
-                initialUrl: "https://hagzz.com/privacy.html",
+                initialUrl: "https://hagzz.el7lm.com/privacy.html",
                 javascriptMode: JavascriptMode.unrestricted,
               ),
             )
