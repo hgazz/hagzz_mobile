@@ -43,12 +43,8 @@ Future<void> cacheStaticUserData() async {
 
 Future<void> requestNotificationPermissions() async {
   final PermissionStatus status = await Permission.notification.request();
-  if (status.isGranted) {
-    await Permission.notification.request();
-  } else if (status.isDenied) {
-    await Permission.notification.request();
-  } else if (status.isPermanentlyDenied) {
-    await Permission.notification.request();
+if (status.isPermanentlyDenied) {
+    await openAppSettings();
   }
 }
 
