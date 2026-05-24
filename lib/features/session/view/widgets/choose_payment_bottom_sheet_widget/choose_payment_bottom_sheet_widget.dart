@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:io';
 
 import 'package:bookit/core/util/constants/app_icons/app_icons.dart';
@@ -73,8 +73,8 @@ class _ChoosePaymentBottomSheetWidgetState
 
         widget.cubit
             .joinTrainingSession(
-                paymentResponse.paymentId,
-                paymentResponse.paymentId,
+                paymentResponse.transactionId,
+                paymentResponse.transactionId,
                 widget.cubit.trainingDetailsResponseModel?.data?.training ??
                     Training())
             .then((value) {

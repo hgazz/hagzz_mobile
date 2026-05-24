@@ -1,4 +1,4 @@
-import 'package:bookit/core/util/constants/app_functions/app_functions.dart';
+﻿import 'package:bookit/core/util/constants/app_functions/app_functions.dart';
 import 'package:bookit/features/edit_profile/view_model/edit_profile_cubit.dart';
 import 'package:bookit/features/following/view_model/following_cubit.dart';
 import 'package:bookit/features/home/view_model/home_cubit.dart';
@@ -107,7 +107,7 @@ class _AppRootState extends State<AppRoot> {
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
               scaffoldBackgroundColor: Color(0xffF2F2F2),
-              tabBarTheme: TabBarTheme(
+              tabBarTheme: TabBarThemeData(
                   labelStyle: GoogleFonts.inter(
                 color: AppColors.black,
                 fontSize: 14.sp,
