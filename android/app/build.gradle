@@ -35,7 +35,7 @@ if (keystorePropertiesFile.exists()) {
 }
 android {
     namespace "com.unlimitedhagzz.hagzz"
-    compileSdkVersion 35
+    compileSdkVersion 36
     ndkVersion flutter.ndkVersion
 
     compileOptions {
