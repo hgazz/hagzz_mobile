@@ -76,6 +76,8 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
+            minifyEnabled false
+            shrinkResources false
         }
     }
 }
@@ -85,7 +87,7 @@ flutter {
 }
 
 dependencies {
-    coreLibraryDesugaring 'com.android.tools.build:desugar_jdk_libs:2.0.3'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 
     implementation 'com.android.support:multidex:2.0.1'
 }
