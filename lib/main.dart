@@ -29,7 +29,10 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 Future<void> requestNotificationPermissions() async {
-  await Permission.notification.request();
+  final PermissionStatus status = await Permission.notification.request();
+  if (status.isPermanentlyDenied) {
+    await openAppSettings();
+  }
 }
 
 handleNotificationNavigation(RemoteMessage message) {
