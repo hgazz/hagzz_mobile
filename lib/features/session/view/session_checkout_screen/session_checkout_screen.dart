@@ -1,3 +1,5 @@
+import 'package:bookit/core/helper/analytics/analytics_service.dart';
+import 'package:bookit/core/helper/review/review_service.dart';
 import 'package:bookit/core/helper/router/rout_constants.dart';
 import 'package:bookit/core/util/constants/app_colors/app_colors.dart';
 import 'package:bookit/core/util/constants/app_strings/app_strings.dart';
@@ -104,6 +106,15 @@ class _SessionCheckOutScreenState extends State<SessionCheckOutScreen> {
                   .then((value) {
                 AppFunctions.logPrint(message: value.toString());
                 if (value) {
+                  AnalyticsService.logBookingSuccess(
+                    sessionId: cubit.trainingDetailsResponseModel?.data?.training?.id ?? 0,
+                    sessionName: cubit.trainingDetailsResponseModel?.data?.training?.name?.toString() ?? '',
+                    price: double.tryParse(
+                          "${cubit.trainingDetailsResponseModel?.data?.training?.discountPrice != 0 ? cubit.trainingDetailsResponseModel?.data?.training?.discountPrice : cubit.trainingDetailsResponseModel?.data?.training?.price}",
+                        ) ?? 0,
+                    orderId: state.orderId,
+                  );
+                  ReviewService.requestReviewAfterBooking();
                   AppFunctions.showSuccessDialogBox(
                       context: context,
                       child: FilledButton(

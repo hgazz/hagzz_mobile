@@ -8,11 +8,12 @@ import 'package:bookit/features/session/model/local_model/session_model.dart';
 import 'package:bookit/firebase_options.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:upgrader/upgrader.dart';
 
 import 'core/app_root/app_root.dart';
 import 'core/helper/cach/cach_helper.dart';
@@ -27,29 +28,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
 }
 
-Future<void> cacheStaticUserData() async {
-  await CacheHelper.setData(
-          key: CachedKeys.token,
-          value:
-              "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwaS5oYWd6ei5jb20vYXBpL2xvZ2luIiwiaWF0IjoxNzE0NTYxNzU4LCJleHAiOjE5MzA1NjE3NTgsIm5iZiI6MTcxNDU2MTc1OCwianRpIjoiazVuR01CRFNYeTF6TXZ3WSIsInN1YiI6IjQwIiwicHJ2IjoiMjNiZDVjODk0OWY2MDBhZGIzOWU3MDFjNDAwODcyZGI3YTU5NzZmNyJ9.rwKMa5yADJWm0m1EMR60dcBVO5yz2eiE3ZR4CF0Y4XQ")
-      .then((value) async {
-    CachedVariables.token = await CacheHelper.getData(key: CachedKeys.token);
-  });
-  await CacheHelper.setData(key: CachedKeys.userId, value: "40")
-      .then((value) async {
-    CachedVariables.userId = await CacheHelper.getData(key: CachedKeys.userId);
-  });
-}
-
 Future<void> requestNotificationPermissions() async {
-  final PermissionStatus status = await Permission.notification.request();
-  if (status.isGranted) {
-    await Permission.notification.request();
-  } else if (status.isDenied) {
-    await Permission.notification.request();
-  } else if (status.isPermanentlyDenied) {
-    await Permission.notification.request();
-  }
+  await Permission.notification.request();
 }
 
 handleNotificationNavigation(RemoteMessage message) {
@@ -95,13 +75,6 @@ handleNotificationNavigation(RemoteMessage message) {
   } else {
     AppFunctions.logPrint(message: "Invalid ID in notification data.");
   }
-
-  //
-  // Get.to(SessionCheckOutScreen(
-  //     checkoutModel:
-  //         CheckoutModel(id: message.data["id"], isNotification: false)));
-  // Get.to(RouteConstants.sessionCheckOut,
-  //     arguments: CheckoutModel(id: 1, isNotification: false));
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -110,13 +83,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+
   await DioHelper.init();
   await HiveHelper.init();
   await CacheHelper.init();
   await requestNotificationPermissions();
   Bloc.observer = MyBlocObserver();
-  await Upgrader.clearSavedSettings();
-  await Future.delayed(Duration(seconds: 2));
   String? fcm;
   await FirebaseMessaging.instance.getToken().then((value) {
     fcm = value;
@@ -139,9 +117,6 @@ void main() async {
         '================================ FOREGROUND NOTIFICATION ================================');
     debugPrint(message.data.toString());
     NotificationService.initNotification();
-    // NotificationService.showNotification(
-    //     title: '${message.notification?.title}',
-    //     body: "${message.notification?.body}");
     NotificationService.dataAction(message);
     AppFunctions.logPrint(
         message: 'Notification title: ${message.notification?.title}');
@@ -149,7 +124,6 @@ void main() async {
         message: 'Notification body: ${message.notification?.body}');
   });
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  // await CacheHelper.deleteData(key: CachedKeys.token);
   runApp(
     EasyLocalization(
         supportedLocales: const [Locale('en', ''), Locale('ar', '')],

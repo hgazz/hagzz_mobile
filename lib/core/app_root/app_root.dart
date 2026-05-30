@@ -1,4 +1,5 @@
-﻿import 'package:bookit/core/util/constants/app_functions/app_functions.dart';
+import 'package:bookit/core/helper/analytics/analytics_service.dart';
+import 'package:bookit/core/util/constants/app_functions/app_functions.dart';
 import 'package:bookit/features/edit_profile/view_model/edit_profile_cubit.dart';
 import 'package:bookit/features/following/view_model/following_cubit.dart';
 import 'package:bookit/features/home/view_model/home_cubit.dart';
@@ -59,11 +60,8 @@ class _AppRootState extends State<AppRoot> {
     return MultiBlocProvider(
         providers: [
           BlocProvider(create: (context) => AuthCubit()),
-          // BlocProvider(create: (context) => EnterPhoneCubit()),
-          // BlocProvider(create: (context) => RegisterCubit()),
           BlocProvider(create: (context) => ChooseSportsCubit()),
           BlocProvider(create: (context) => EditProfileCubit()),
-          // BlocProvider(create: (context) => OtpCubit()),
           BlocProvider(create: (context) => HomeCubit()),
           BlocProvider(create: (context) => BottomNavBarCubit()),
           BlocProvider(create: (context) => SearchCubit()),
@@ -72,10 +70,6 @@ class _AppRootState extends State<AppRoot> {
           BlocProvider(create: (context) => FollowingCubit()),
           BlocProvider(create: (context) => ProfileCubit()),
           BlocProvider(create: (context) => MySessionsCubit()),
-          // BlocProvider(create: (context) => AcademyProfileCubit()),
-          // BlocProvider(create: (context) => CoachProfileCubit()),
-          BlocProvider(create: (context) => SavedCubit()),
-          // BlocProvider(create: (context) => SessionCubit()),
           BlocProvider(create: (context) => NotificationCubit()),
           BlocProvider(create: (context) => AddressCubit()),
         ],
@@ -89,6 +83,7 @@ class _AppRootState extends State<AppRoot> {
             debugShowCheckedModeBanner: false,
             onGenerateRoute: AppRouter.generateRoute,
             initialRoute: RouteConstants.init,
+            navigatorObservers: [AnalyticsService.observer],
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,
