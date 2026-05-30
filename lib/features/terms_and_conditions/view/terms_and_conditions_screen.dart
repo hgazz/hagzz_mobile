@@ -1,4 +1,4 @@
-import 'package:bookit/core/util/constants/app_functions/app_functions.dart';
+﻿import 'package:bookit/core/util/constants/app_functions/app_functions.dart';
 import 'package:bookit/features/profile/view/widgets/header_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -16,27 +16,23 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
 
   @override
   void initState() {
-    // controller = WebViewController()
-    //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    //   ..setBackgroundColor(const Color(0x00000000))
-    //   ..setNavigationDelegate(
-    //     NavigationDelegate(
-    //       onProgress: (int progress) {
-    //         // Update loading bar.
-    //       },
-    //       onPageStarted: (String url) {},
-    //       onPageFinished: (String url) {},
-    //       onWebResourceError: (WebResourceError error) {},
-    //       onNavigationRequest: (NavigationRequest request) {
-    //         if (request.url.startsWith('https://www.youtube.com/')) {
-    //           return NavigationDecision.prevent;
-    //         }
-    //         return NavigationDecision.navigate;
-    //       },
-    //     ),
-    //   )
-    //   ..loadRequest(Uri.parse('https://hagzz.el7lm.com/termsAndConditions.html'));
-
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onWebResourceError: (WebResourceError error) {
+            AppFunctions.logPrint(message: "Error: ${error.toString()}");
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            if (request.url.startsWith('https://www.youtube.com/')) {
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse('https://hagzz.el7lm.com/termsAndConditions.html'));
     super.initState();
   }
 
@@ -51,17 +47,7 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
                   AppFunctions.popNavigate(context: context);
                 },
                 title: ""),
-            Expanded(
-                child: WebView(
-              initialUrl: 'https://hagzz.el7lm.com/termsAndConditions.html',
-              javascriptMode: JavascriptMode.unrestricted,
-              onWebViewCreated: (value) {
-                AppFunctions.logPrint(message: "Valueee: ${value.toString()}");
-              },
-              onWebResourceError: (error) {
-                AppFunctions.logPrint(message: "Error: ${error.toString()}");
-              },
-            ))
+            Expanded(child: WebViewWidget(controller: controller)),
           ],
         ),
       ),
