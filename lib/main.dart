@@ -25,7 +25,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  print("Handling a background message: ${message.messageId}");
+  if (kDebugMode) print("Handling a background message: ${message.messageId}");
 }
 
 Future<void> requestNotificationPermissions() async {

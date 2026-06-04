@@ -2,6 +2,7 @@ import 'package:bookit/core/helper/cach/cached_variables.dart';
 import 'package:bookit/core/helper/dio/end_points.dart';
 import 'package:bookit/core/util/constants/app_functions/app_functions.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 class DioHelper {
@@ -12,17 +13,18 @@ class DioHelper {
       baseUrl: EndPoints.baseUrl,
       receiveDataWhenStatusError: true,
       followRedirects: false,
-      // will not throw errors
       validateStatus: (status) => true,
     ));
-    dio.interceptors.add(PrettyDioLogger(
-        requestHeader: true,
-        requestBody: true,
-        responseBody: true,
-        responseHeader: false,
-        error: true,
-        compact: true,
-        maxWidth: 90));
+    if (kDebugMode) {
+      dio.interceptors.add(PrettyDioLogger(
+          requestHeader: true,
+          requestBody: true,
+          responseBody: true,
+          responseHeader: false,
+          error: true,
+          compact: true,
+          maxWidth: 90));
+    }
   }
 
   static Future<Response> getData({
@@ -32,8 +34,6 @@ class DioHelper {
     String? token,
   }) async {
     try {
-      AppFunctions.logPrint(
-          message: "FCMMMMMMMMMMM ${await CachedVariables.fcmToken}");
       dio.options.headers = {
         'Authorization': 'Bearer $token',
         "Accept": "application/json",
@@ -48,12 +48,6 @@ class DioHelper {
             responseType: ResponseType.json,
           ));
     } catch (error) {
-      print("Errorrrr: ${error.toString()}");
-      // if (error == DioExceptionType.connectionError) {
-      //   AppFunctions.namedNavigateTo(
-      //       context: context,
-      //       navigatedScreen: RouteConstants.lostInternetConnection);
-      // }
       rethrow;
     }
   }
@@ -67,8 +61,6 @@ class DioHelper {
       Map<String, dynamic>? headers,
       CancelToken? cancelToken}) async {
     try {
-      AppFunctions.logPrint(
-          message: "FCMMMMMMMMMMM ${await CachedVariables.fcmToken}");
       dio.options.headers = headers ??
           {
             'Authorization': 'Bearer $token',

@@ -7,6 +7,7 @@ import 'package:bookit/core/util/models/api_models/error_response_model/error_re
 import 'package:bookit/features/session/model/enum_model/enum_details_models.dart';
 import 'package:bookit/features/session/model/training_details_response_model.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geideapay/common/geidea.dart';
@@ -123,8 +124,6 @@ class SessionCubit extends Cubit<SessionState> {
       }
       if (value.statusCode == 200) {
         isJoined = true;
-        // getTrainingDetailsById(
-        //     id: trainingDetailsResponseModel!.data!.training!.id!);
         emit(JoinTrainingSessionSuccessState());
       } else {
         errorMessage = value.data['message'];
@@ -191,7 +190,6 @@ class SessionCubit extends Cubit<SessionState> {
           .then((value) async {
         AppFunctions.logPrint(message: 'Responseeeeeeeeeee = $value');
         if (value.responseCode == "000" && value.responseMessage == "Success") {
-          // Payment successful, order returned in response
           AppFunctions.logPrint(
               message: "Order Idddd: ${value.order?.orderId}");
           emit(BuildPaymentSdkSuccessState(
@@ -204,7 +202,7 @@ class SessionCubit extends Cubit<SessionState> {
           }
         }
 
-        print("Order ID: ${value.detailedResponseCode}");
+        if (kDebugMode) print("Order ID: ${value.detailedResponseCode}");
       }).catchError((error) {
         AppFunctions.logPrint(message: 'Error = ${error.toString()}');
         if (!isClosed) {
