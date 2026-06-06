@@ -1,6 +1,7 @@
 import 'package:bookit/core/helper/cach/cached_variables.dart';
 import 'package:bookit/core/helper/dio/dio_helper.dart';
 import 'package:bookit/core/helper/dio/end_points.dart';
+import 'package:bookit/core/util/constants/app_constants/app_constants.dart';
 import 'package:bookit/core/util/constants/app_functions/app_functions.dart';
 import 'package:bookit/core/util/models/api_models/api_response_models/default_response_model/default_response_model.dart';
 import 'package:bookit/core/util/models/api_models/error_response_model/error_response_model.dart';
@@ -155,8 +156,8 @@ class SessionCubit extends Cubit<SessionState> {
 
   initPayment() {
     geideaPayment.initialize(
-        publicKey: "3448c010-87b1-41e7-9771-cac444268cfb",
-        apiPassword: "edfd5eee-fd1b-4932-9ee1-d6d9ba7599f0",
+        publicKey: AppConstants.geideaPublicKey,
+        apiPassword: AppConstants.geideaApiPassword,
         serverEnvironment: ServerEnvironmentModel(
             'PayTech', 'https://api.merchant.geidea.net'));
 
