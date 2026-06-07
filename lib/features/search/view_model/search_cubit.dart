@@ -1,3 +1,4 @@
+import 'package:bookit/core/helper/analytics/analytics_service.dart';
 import 'package:bookit/core/helper/cach/cached_variables.dart';
 import 'package:bookit/core/helper/dio/dio_helper.dart';
 import 'package:bookit/core/helper/dio/end_points.dart';
@@ -237,6 +238,9 @@ class SearchCubit extends Cubit<SearchState> {
       currentSearchData.clear();
       page = 1;
       totalPages = 0;
+      if (searchController.text.isNotEmpty) {
+        AnalyticsService.logSearch(searchTerm: searchController.text);
+      }
     }
     await DioHelper.postData(
       url: EndPoints.explore,

@@ -1,6 +1,7 @@
 import 'package:bookit/core/helper/cach/cach_helper.dart';
 import 'package:bookit/core/helper/cach/cached_keys.dart';
 import 'package:bookit/core/helper/cach/cached_variables.dart';
+import 'package:bookit/core/helper/analytics/analytics_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -77,6 +78,7 @@ class OtpCubit extends Cubit<OtpState> {
     }).then((value) {
       DefaultResponseModel model = DefaultResponseModel.fromJson(value.data);
       if (value.statusCode == 200) {
+        AnalyticsService.logLogin();
         emit(VerifyOtpSuccessState(
             model: model,
             cachedData: CachedDataModel(
