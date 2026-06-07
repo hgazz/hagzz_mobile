@@ -1,3 +1,4 @@
+import 'package:bookit/core/helper/analytics/analytics_service.dart';
 import 'package:bookit/core/util/widgets/address_widget/view_model/address_cubit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,6 +71,7 @@ class RegisterCubit extends Cubit<RegisterState> {
         .then((value) {
       DefaultResponseModel model = DefaultResponseModel.fromJson(value.data);
       if (value.statusCode == 200) {
+        AnalyticsService.logSignUp();
         emit(RegisterSuccessState(message: model.message ?? ''));
       } else if (value.statusCode == 400) {
         RegisterValidationErrorModel model =
