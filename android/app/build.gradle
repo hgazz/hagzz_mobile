@@ -56,8 +56,8 @@ android {
         applicationId "com.unlimitedhagzz.hagzz"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 38
-        versionName "1.0.11"
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
         multiDexEnabled true
     }
 
