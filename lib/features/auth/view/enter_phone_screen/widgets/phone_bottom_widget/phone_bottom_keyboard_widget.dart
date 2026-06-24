@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../../core/helper/router/rout_constants.dart';
 import '../../../../../../core/util/constants/app_colors/app_colors.dart';
 import '../../../../../../core/util/constants/app_functions/app_functions.dart';
+import '../../../../../../core/util/constants/app_icons/app_icons.dart';
 import '../../../../../../core/util/constants/app_strings/app_strings.dart';
 import '../../../../../../core/util/widgets/bottom_widget/bottom_widget.dart';
 import '../dont_have_an_account_widget/dont_have_an_account_widget.dart';
@@ -31,13 +32,15 @@ class PhoneBottomKeyboardWidget extends StatelessWidget {
           // cubit.cachePhoneNumber();
 
           AppFunctions.namedNavigateTo(
-              context: context,
-              navigatedScreen: RouteConstants.verificationCode,
-              args: VerificationCodeLocalModel(
-                  isLogin: true,
-                  phone: cubit.phoneNumberController.text.replaceAll(" ", ""),
-                  code: cubit.countryCode,
-                  isSendingViaWhatsApp: cubit.isWhatsapp));
+            context: context,
+            navigatedScreen: RouteConstants.verificationCode,
+            args: VerificationCodeLocalModel(
+              isLogin: true,
+              phone: cubit.phoneNumberController.text.replaceAll(" ", ""),
+              code: cubit.countryCode,
+              isSendingViaWhatsApp: cubit.isWhatsapp,
+            ),
+          );
 
           // cubit.clearAllData();
         }
@@ -58,15 +61,30 @@ class PhoneBottomKeyboardWidget extends StatelessWidget {
                   cubit.changeCountryCode(value);
                 },
               ),
+              SizedBox(height: 12.h),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Image.asset(AppIcons.whatsapp, width: 20.w, height: 20.h),
+                  SizedBox(width: 8.w),
+                  Expanded(
+                    child: CustomTextWidget(
+                      text: AppStrings.whatsappNumberHint,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w400,
+                      color: AppColors.greyColor,
+                    ),
+                  ),
+                ],
+              ),
               if (state is UserNotFoundState)
                 CustomTextWidget(
-                    text: AppStrings.userNotFound,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                    color: AppColors.redColor),
-              SizedBox(
-                height: 16.h,
-              ),
+                  text: AppStrings.userNotFound,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: AppColors.redColor,
+                ),
+              SizedBox(height: 16.h),
               // ChooseVerificationTypeComponent(
               //   getSelected: (value) {
               //     cubit.changeSelectedVerificationType(isWhatsApp: value);
@@ -84,9 +102,7 @@ class PhoneBottomKeyboardWidget extends StatelessWidget {
                   }
                 },
               ),
-              SizedBox(
-                height: 8.h,
-              ),
+              SizedBox(height: 8.h),
               DontHaveAnAccountWidget(),
             ],
           ),

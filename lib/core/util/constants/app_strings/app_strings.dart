@@ -2,6 +2,8 @@ class AppStrings {
   static const String appName = "appName";
   static const String enterMobilePhone = "enterMobilePhone";
   static const String loginEnterPhoneLabel = "loginEnterPhoneLabel";
+  static const String whatsappNumberHint = "whatsappNumberHint";
+  static const String otpSentViaWhatsapp = "otpSentViaWhatsapp";
   static const String sendCode = "sendCode";
   static const String enterVerificationCode = "enterVerificationCode";
   static const String verificationCodeMessage = "verificationCodeMessage";

@@ -15,13 +15,14 @@ class HeaderVerificationPasswordCommonWidget extends StatelessWidget {
   final bool isLogin;
   final RegisterModel? registerModel;
 
-  const HeaderVerificationPasswordCommonWidget(
-      {super.key,
-      required this.titleText,
-      required this.phone,
-      required this.code,
-      required this.isLogin,
-      required this.registerModel});
+  const HeaderVerificationPasswordCommonWidget({
+    super.key,
+    required this.titleText,
+    required this.phone,
+    required this.code,
+    required this.isLogin,
+    required this.registerModel,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,32 +30,30 @@ class HeaderVerificationPasswordCommonWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         TitleTextWidget(text: titleText),
-        SizedBox(
-          height: 8.h,
-        ),
-        const LabelTextWidget(text: AppStrings.verificationCodeMessage),
+        SizedBox(height: 8.h),
+        const LabelTextWidget(text: AppStrings.otpSentViaWhatsapp),
         Row(
           children: [
             LabelTextWidget(text: "$code$phone"),
-            SizedBox(
-              width: 4.w,
-            ),
+            SizedBox(width: 4.w),
             InkWell(
-                onTap: () {
-                  if (isLogin) {
-                    AppFunctions.popNavigate(context: context);
-                  } else {
-                    AppFunctions.namedNavigateAndFinishTo(
-                        context: context,
-                        navigatedScreen: RouteConstants.createAnAccount,
-                        args: registerModel);
-                  }
-                },
-                child: const LabelTextWidget(
-                  text: AppStrings.tapToChange,
-                  textDecoration: TextDecoration.underline,
-                  isBold: true,
-                ))
+              onTap: () {
+                if (isLogin) {
+                  AppFunctions.popNavigate(context: context);
+                } else {
+                  AppFunctions.namedNavigateAndFinishTo(
+                    context: context,
+                    navigatedScreen: RouteConstants.createAnAccount,
+                    args: registerModel,
+                  );
+                }
+              },
+              child: const LabelTextWidget(
+                text: AppStrings.tapToChange,
+                textDecoration: TextDecoration.underline,
+                isBold: true,
+              ),
+            ),
           ],
         ),
       ],

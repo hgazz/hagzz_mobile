@@ -1,7 +1,9 @@
 {
   "appName": "Hagzz",
   "enterMobilePhone": "Enter your Mobile Number",
-  "loginEnterPhoneLabel": "We will send you a one-time password (OTP)\non your phone number",
+  "loginEnterPhoneLabel": "We will send your verification code via WhatsApp",
+  "whatsappNumberHint": "Please enter a phone number registered with WhatsApp.",
+  "otpSentViaWhatsapp": "We sent a 5-digit code via WhatsApp to",
   "sendCode": "Send Code",
   "enterVerificationCode": "Enter Verification Code",
   "verificationCodeMessage": "Please enter the 5-digit code we sent to",

@@ -1,7 +1,9 @@
 {
   "appName": "حجز",
   "enterMobilePhone": "أدخل رقم هاتفك المحمول",
-  "loginEnterPhoneLabel": "سوف نرسل لك كلمة مرور لمرة واحدة (OTP)\nعلى رقم هاتفك",
+  "loginEnterPhoneLabel": "سنرسل لك رمز التحقق عبر واتساب",
+  "whatsappNumberHint": "يرجى إدخال رقم هاتف مسجل على واتساب.",
+  "otpSentViaWhatsapp": "أرسلنا رمزًا مكونًا من 5 أرقام عبر واتساب إلى",
   "sendCode": "إرسال الرمز",
   "enterVerificationCode": "أدخل رمز التحقق",
   "verificationCodeMessage": "الرجاء إدخال الرمز المكون من 5 أرقام الذي أرسلناه إليه",

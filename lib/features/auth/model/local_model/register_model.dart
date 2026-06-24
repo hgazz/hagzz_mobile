@@ -43,9 +43,9 @@ class RegisterModel {
       "city_id": cityId,
       "area_id": areaId,
       "country_code": countryCode,
-      "send_type": isWhatsapp ? "whatsapp" : "sms",
+      "send_type": "whatsapp",
       if (oldPhone != null) "old_phone": oldPhone,
-      if (image != null) "image": await MultipartFile.fromFile(image!)
+      if (image != null) "image": await MultipartFile.fromFile(image!),
     };
 
     return map;

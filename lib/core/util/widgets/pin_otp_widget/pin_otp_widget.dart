@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pinput/pinput.dart';
 
@@ -11,30 +12,34 @@ class PinOtpWidget extends StatelessWidget {
   final void Function()? onTap;
   final String? Function(String?)? validator;
 
-  const PinOtpWidget(
-      {super.key,
-      required this.controller,
-      required this.onComplete,
-      this.onChange,
-      this.onTap,
-      required this.validator});
+  const PinOtpWidget({
+    super.key,
+    required this.controller,
+    required this.onComplete,
+    this.onChange,
+    this.onTap,
+    required this.validator,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Pinput(
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: Pinput(
           controller: controller,
           length: 5,
+          inputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9٠-٩۰-۹]')),
+          ],
           defaultPinTheme: PinTheme(
             width: 56.w,
             height: 56.h,
-            textStyle: const TextStyle(
-              fontSize: 22,
-              color: Colors.black,
-            ),
+            textStyle: const TextStyle(fontSize: 22, color: Colors.black),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(19.r),
-                color: AppColors.surfaceContainer),
+              borderRadius: BorderRadius.circular(19.r),
+              color: AppColors.surfaceContainer,
+            ),
           ),
           separatorBuilder: (index) => const SizedBox(width: 8),
           validator: validator,
@@ -57,36 +62,32 @@ class PinOtpWidget extends StatelessWidget {
           focusedPinTheme: PinTheme(
             width: 56.w,
             height: 56.h,
-            textStyle: const TextStyle(
-              fontSize: 22,
-              color: Colors.black,
-            ),
+            textStyle: const TextStyle(fontSize: 22, color: Colors.black),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(19.r),
-                color: AppColors.surfaceContainer),
+              borderRadius: BorderRadius.circular(19.r),
+              color: AppColors.surfaceContainer,
+            ),
           ),
           submittedPinTheme: PinTheme(
             width: 56.w,
             height: 56.h,
-            textStyle: const TextStyle(
-              fontSize: 22,
-              color: Colors.black,
-            ),
+            textStyle: const TextStyle(fontSize: 22, color: Colors.black),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(19.r),
-                color: AppColors.lemonColor),
+              borderRadius: BorderRadius.circular(19.r),
+              color: AppColors.lemonColor,
+            ),
           ),
           errorPinTheme: PinTheme(
             width: 56.w,
             height: 56.h,
-            textStyle: const TextStyle(
-              fontSize: 22,
-              color: Colors.black,
-            ),
+            textStyle: const TextStyle(fontSize: 22, color: Colors.black),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(19.r),
-                color: AppColors.redColor),
-          )),
+              borderRadius: BorderRadius.circular(19.r),
+              color: AppColors.redColor,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

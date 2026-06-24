@@ -28,23 +28,25 @@ class EnterPhoneCubit extends Cubit<EnterPhoneState> {
   Future<void> login() async {
     emit(LoginLoadingState());
     await DioHelper.postData(
-      url: EndPoints.login,
-      data: {
-        "phone": phoneNumberController.text.replaceAll(" ", ""),
-        "fcm_token": await CachedVariables.fcmToken,
-        "country_code": countryCode,
-        "send_type": isWhatsapp ? "whatsapp" : "sms"
-      },
-    ).then((value) {
-      if (value.statusCode == 200) {
-        emit(LoginSuccessState());
-      } else if (value.statusCode == 400) {
-        emit(UserNotFoundState());
-      }
-    }).catchError((error) {
-      AppFunctions.logPrint(message: "Error $error");
-      emit(LoginErrorState(error: error.toString()));
-    });
+          url: EndPoints.login,
+          data: {
+            "phone": phoneNumberController.text.replaceAll(" ", ""),
+            "fcm_token": await CachedVariables.fcmToken,
+            "country_code": countryCode,
+            "send_type": "whatsapp",
+          },
+        )
+        .then((value) {
+          if (value.statusCode == 200) {
+            emit(LoginSuccessState());
+          } else if (value.statusCode == 400) {
+            emit(UserNotFoundState());
+          }
+        })
+        .catchError((error) {
+          AppFunctions.logPrint(message: "Error $error");
+          emit(LoginErrorState(error: error.toString()));
+        });
   }
 
   String countryCode = "+2";
@@ -69,8 +71,9 @@ class EnterPhoneCubit extends Cubit<EnterPhoneState> {
 
   Future<void> cachePhoneNumber() async {
     await CacheHelper.setData(
-            key: CachedKeys.phone, value: phoneNumberController.text)
-        .then((value) async {
+      key: CachedKeys.phone,
+      value: phoneNumberController.text,
+    ).then((value) async {
       CachedVariables.phone = await CacheHelper.getData(key: CachedKeys.phone);
       emit(CachedPhoneNumberState());
     });
