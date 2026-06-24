@@ -12,32 +12,23 @@ class TermsAndConditionsScreen extends StatefulWidget {
 }
 
 class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
-  late WebViewController controller;
+  late final WebViewController controller;
 
   @override
   void initState() {
-    // controller = WebViewController()
-    //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    //   ..setBackgroundColor(const Color(0x00000000))
-    //   ..setNavigationDelegate(
-    //     NavigationDelegate(
-    //       onProgress: (int progress) {
-    //         // Update loading bar.
-    //       },
-    //       onPageStarted: (String url) {},
-    //       onPageFinished: (String url) {},
-    //       onWebResourceError: (WebResourceError error) {},
-    //       onNavigationRequest: (NavigationRequest request) {
-    //         if (request.url.startsWith('https://www.youtube.com/')) {
-    //           return NavigationDecision.prevent;
-    //         }
-    //         return NavigationDecision.navigate;
-    //       },
-    //     ),
-    //   )
-    //   ..loadRequest(Uri.parse('https://hagzz.el7lm.com/termsAndConditions.html'));
-
     super.initState();
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onWebResourceError: (error) {
+            AppFunctions.logPrint(message: "Error: ${error.toString()}");
+          },
+        ),
+      )
+      ..loadRequest(
+        Uri.parse('https://hagzz.el7lm.com/termsAndConditions.html'),
+      );
   }
 
   @override
@@ -51,17 +42,7 @@ class _TermsAndConditionsScreenState extends State<TermsAndConditionsScreen> {
                   AppFunctions.popNavigate(context: context);
                 },
                 title: ""),
-            Expanded(
-                child: WebView(
-              initialUrl: 'https://hagzz.el7lm.com/termsAndConditions.html',
-              javascriptMode: JavascriptMode.unrestricted,
-              onWebViewCreated: (value) {
-                AppFunctions.logPrint(message: "Valueee: ${value.toString()}");
-              },
-              onWebResourceError: (error) {
-                AppFunctions.logPrint(message: "Error: ${error.toString()}");
-              },
-            ))
+            Expanded(child: WebViewWidget(controller: controller))
           ],
         ),
       ),

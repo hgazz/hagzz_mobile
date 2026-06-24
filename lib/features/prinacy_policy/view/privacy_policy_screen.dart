@@ -12,32 +12,14 @@ class PrivacyPolicyScreen extends StatefulWidget {
 }
 
 class _TermsAndConditionsScreenState extends State<PrivacyPolicyScreen> {
-  late WebViewController controller;
+  late final WebViewController controller;
 
   @override
   void initState() {
-    // controller = WebViewController()
-    //   ..setJavaScriptMode(JavaScriptMode.unrestricted)
-    //   ..setBackgroundColor(const Color(0x00000000))
-    //   ..setNavigationDelegate(
-    //     NavigationDelegate(
-    //       onProgress: (int progress) {
-    //         // Update loading bar.
-    //       },
-    //       onPageStarted: (String url) {},
-    //       onPageFinished: (String url) {},
-    //       onWebResourceError: (WebResourceError error) {},
-    //       onNavigationRequest: (NavigationRequest request) {
-    //         if (request.url.startsWith('https://www.youtube.com/')) {
-    //           return NavigationDecision.prevent;
-    //         }
-    //         return NavigationDecision.navigate;
-    //       },
-    //     ),
-    //   )
-    //   ..loadRequest(Uri.parse('https://hagzz.el7lm.com/privacy.html'));
-
     super.initState();
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..loadRequest(Uri.parse('https://hagzz.el7lm.com/privacy.html'));
   }
 
   @override
@@ -51,12 +33,7 @@ class _TermsAndConditionsScreenState extends State<PrivacyPolicyScreen> {
                   AppFunctions.popNavigate(context: context);
                 },
                 title: ""),
-            Expanded(
-              child: WebView(
-                initialUrl: "https://hagzz.el7lm.com/privacy.html",
-                javascriptMode: JavascriptMode.unrestricted,
-              ),
-            )
+            Expanded(child: WebViewWidget(controller: controller))
           ],
         ),
       ),

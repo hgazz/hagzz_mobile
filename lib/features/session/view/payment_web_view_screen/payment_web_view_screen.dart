@@ -23,6 +23,88 @@ class PaymentWebViewScreen extends StatefulWidget {
 }
 
 class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
+  late final WebViewController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: _handlePageStarted,
+          onWebResourceError: (error) {
+            AppFunctions.logPrint(message: "Error: ${error.toString()}");
+          },
+        ),
+      )
+      ..loadRequest(
+        Uri.parse(widget.data.paymentData.resultObj?.payUrl ?? 'about:blank'),
+      );
+  }
+
+  Future<void> _handlePageStarted(String url) async {
+    AppFunctions.logPrint(message: "Started: $url");
+
+    if (!url.contains("status=Paid")) {
+      return;
+    }
+
+    final cubit = SessionCubit.get(context);
+    final joined = await cubit.joinTrainingSession(
+      widget.data.paymentData.resultObj?.id ?? "0",
+      widget.data.paymentData.resultObj?.id ?? "0",
+      widget.data.training,
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (joined) {
+      AppFunctions.showSuccessDialogBox(
+        context: context,
+        child: FilledButton(
+          style: FilledButton.styleFrom(
+            minimumSize: const Size(double.infinity, 0),
+          ),
+          onPressed: () {
+            widget.data.cubit.getTrainingDetailsById(
+              id: widget.data.training.id ?? 0,
+            );
+            AppFunctions.popNavigate(context: context);
+            AppFunctions.popNavigate(context: context);
+          },
+          child: Padding(
+            padding: EdgeInsets.symmetric(vertical: 12.0.h),
+            child: CustomTextWidget(
+              text: AppStrings.backToTraining,
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w500,
+              color: AppColors.black,
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+
+    AppFunctions.popNavigate(context: context);
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => BottomSheetWidget(
+        height: MediaQuery.of(context).size.height * 0.45,
+        child: FailedBottomSheetWidget(
+          error: cubit.errorMessage ??
+              AppFunctions.translateText(
+                text: AppStrings.pleaseTryAgain,
+                context: context,
+              ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,69 +116,9 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           if (state is JoinTrainingSessionSuccessState) {}
         },
         builder: (context, state) {
-          var cubit = SessionCubit.get(context);
           AppFunctions.logPrint(
               message: "Dataaa: ${widget.data.paymentData.resultObj?.payUrl}");
-          return WebView(
-            initialUrl: widget.data.paymentData?.resultObj?.payUrl,
-            javascriptMode: JavascriptMode.unrestricted,
-            onWebViewCreated: (value) {
-              AppFunctions.logPrint(message: "Valueee: ${value.toString()}");
-            },
-            onPageStarted: (value) async {
-              AppFunctions.logPrint(message: "Started: ${value.toString()}");
-
-              if (value.toString().contains("status=Paid")) {
-                await cubit
-                    .joinTrainingSession(
-                        widget.data.paymentData?.resultObj?.id ?? "0",
-                        widget.data.paymentData?.resultObj?.id ?? "0",
-                        widget.data.training)
-                    .then((value) {
-                  if (value) {
-                    AppFunctions.showSuccessDialogBox(
-                        context: context,
-                        child: FilledButton(
-                            style: FilledButton.styleFrom(
-                              minimumSize: const Size(double.infinity, 0),
-                            ),
-                            onPressed: () {
-                              widget.data.cubit.getTrainingDetailsById(
-                                  id: widget.data.training.id ?? 0);
-                              AppFunctions.popNavigate(context: context);
-                              AppFunctions.popNavigate(context: context);
-                            },
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(vertical: 12.0.h),
-                              child: CustomTextWidget(
-                                text: AppStrings.backToTraining,
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.black,
-                              ),
-                            )));
-                  } else {
-                    AppFunctions.popNavigate(context: context);
-                    showModalBottomSheet(
-                      context: context,
-                      builder: (context) => BottomSheetWidget(
-                        height: MediaQuery.of(context).size.height * 0.45,
-                        child: FailedBottomSheetWidget(
-                          error: cubit.errorMessage ??
-                              AppFunctions.translateText(
-                                  text: AppStrings.pleaseTryAgain,
-                                  context: context),
-                        ),
-                      ),
-                    );
-                  }
-                });
-              }
-            },
-            onWebResourceError: (error) {
-              AppFunctions.logPrint(message: "Error: ${error.toString()}");
-            },
-          );
+          return WebViewWidget(controller: controller);
         },
       ),
     );

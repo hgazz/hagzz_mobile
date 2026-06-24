@@ -73,8 +73,8 @@ class _ChoosePaymentBottomSheetWidgetState
 
         widget.cubit
             .joinTrainingSession(
-                paymentResponse.paymentId,
-                paymentResponse.paymentId,
+                paymentResponse.transactionId,
+                paymentResponse.transactionId,
                 widget.cubit.trainingDetailsResponseModel?.data?.training ??
                     Training())
             .then((value) {
