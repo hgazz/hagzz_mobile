@@ -30,7 +30,7 @@ class PinOtpWidget extends StatelessWidget {
           controller: controller,
           length: 5,
           inputFormatters: [
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9٠-٩۰-۹]')),
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9\u0660-\u0669\u06F0-\u06F9]')),
           ],
           defaultPinTheme: PinTheme(
             width: 56.w,

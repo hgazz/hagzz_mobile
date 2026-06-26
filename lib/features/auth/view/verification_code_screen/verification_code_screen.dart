@@ -143,7 +143,10 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                                 value: value ?? '', context: context),
                             controller: cubit.otpController,
                             onComplete: (pin) {
-                              cubit.verifyOtp(phone: widget.model.phone);
+                              cubit.verifyOtp(
+                                phone: widget.model.phone,
+                                countryCode: widget.model.code,
+                              );
                             },
                           ),
                         ),
@@ -155,13 +158,17 @@ class _VerificationCodeScreenState extends State<VerificationCodeScreen> {
                                 state is! VerifyOtpLoadingState ? false : true,
                             text: AppStrings.verify,
                             onTap: () {
-                              cubit.verifyOtp(phone: widget.model.phone);
+                              cubit.verifyOtp(
+                                phone: widget.model.phone,
+                                countryCode: widget.model.code,
+                              );
                             }),
                         SizedBox(
                           height: 20.h,
                         ),
                         ResendCodeWidget(
                           phone: widget.model.phone,
+                          countryCode: widget.model.code,
                           isWhatsapp: widget.model.isSendingViaWhatsApp,
                         ),
                       ],

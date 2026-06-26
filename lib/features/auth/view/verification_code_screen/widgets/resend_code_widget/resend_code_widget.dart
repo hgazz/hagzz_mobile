@@ -14,10 +14,11 @@ import '../../../../view_model/otp_cubit/otp_cubit.dart';
 
 class ResendCodeWidget extends StatefulWidget {
   final String phone;
+  final String countryCode;
   final bool isWhatsapp;
 
   const ResendCodeWidget(
-      {super.key, required this.phone, required this.isWhatsapp});
+      {super.key, required this.phone, required this.countryCode, required this.isWhatsapp});
 
   @override
   State<ResendCodeWidget> createState() => _ResendCodeWidgetState();
@@ -45,6 +46,7 @@ class _ResendCodeWidgetState extends State<ResendCodeWidget> {
                         ? () {
                             cubit.resendOtp(
                                 phone: widget.phone,
+                                countryCode: widget.countryCode,
                                 isWhatsapp: widget.isWhatsapp);
                           }
                         : null),

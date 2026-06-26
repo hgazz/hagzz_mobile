@@ -20,13 +20,14 @@ class OtpCubit extends Cubit<OtpState> {
 
   var otpController = TextEditingController();
 
-  Future<void> verifyOtp({required String phone}) async {
+  Future<void> verifyOtp({required String phone, required String countryCode}) async {
     emit(VerifyOtpLoadingState());
     await DioHelper.postData(
       url: EndPoints.verifyCode,
       data: {
         "otp": _normalizeDigits(otpController.text),
         "phone_number": phone,
+        "country_code": countryCode,
       },
     ).then((value) {
       DefaultResponseModel model = DefaultResponseModel.fromJson(
@@ -45,7 +46,14 @@ class OtpCubit extends Cubit<OtpState> {
           ),
         );
       } else if (value.statusCode == 400) {
-        emit(VerifyOtpErrorState(error: value.data["errors"]["otp"][0]));
+        final otpErrors = value.data["errors"]?["otp"];
+        emit(
+          VerifyOtpErrorState(
+            error: otpErrors is List && otpErrors.isNotEmpty
+                ? otpErrors.first.toString()
+                : model.message ?? '',
+          ),
+        );
       } else {
         emit(VerifyOtpErrorState(error: model.message ?? ''));
       }
@@ -63,12 +71,17 @@ class OtpCubit extends Cubit<OtpState> {
 
   Future<void> resendOtp({
     required String phone,
+    required String countryCode,
     required bool isWhatsapp,
   }) async {
     emit(ResendOtpLoadingState());
     await DioHelper.postData(
       url: EndPoints.resendOtp,
-      data: {"phone": phone, "send_type": "whatsapp"},
+      data: {
+        "phone": phone,
+        "country_code": countryCode,
+        "send_type": "whatsapp",
+      },
     ).then((value) {
       DefaultResponseModel model = DefaultResponseModel.fromJson(
         value.data,
@@ -85,24 +98,20 @@ class OtpCubit extends Cubit<OtpState> {
   }
 
   String _normalizeDigits(String value) {
-    const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
-    const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+    final buffer = StringBuffer();
 
-    return value.split('').map((character) {
-      final arabicIndex = arabicDigits.indexOf(character);
-      if (arabicIndex >= 0) {
-        return arabicIndex.toString();
+    for (final rune in value.runes) {
+      if (rune >= 0x30 && rune <= 0x39) {
+        buffer.writeCharCode(rune);
+      } else if (rune >= 0x0660 && rune <= 0x0669) {
+        buffer.write(rune - 0x0660);
+      } else if (rune >= 0x06F0 && rune <= 0x06F9) {
+        buffer.write(rune - 0x06F0);
       }
+    }
 
-      final persianIndex = persianDigits.indexOf(character);
-      if (persianIndex >= 0) {
-        return persianIndex.toString();
-      }
-
-      return character;
-    }).join();
+    return buffer.toString();
   }
-
   Future<void> cacheData({required CachedDataModel data}) async {
     await CacheHelper.setData(key: CachedKeys.token, value: data.token).then((
       value,
