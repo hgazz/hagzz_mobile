@@ -54,7 +54,9 @@ android {
 
     defaultConfig {
         applicationId "com.unlimitedhagzz.hagzz"
-        minSdkVersion 21
+        // Keep compatibility with the currently published Play release.
+        // Flutter 3.44 supports API 23 but defaults new builds to API 24.
+        minSdkVersion 23
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
