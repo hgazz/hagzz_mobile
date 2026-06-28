@@ -4,7 +4,6 @@ import 'package:bookit/core/util/constants/app_colors/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_svg_provider/flutter_svg_provider.dart' as svgProvider;
 import 'package:image_picker/image_picker.dart';
 
 import '../../constants/app_icons/app_icons.dart';
@@ -50,14 +49,16 @@ class _UserImageWidgetState extends State<UserImageWidget> {
           children: [
             CircleAvatar(
               radius: 55.r,
-              backgroundColor: image == null && widget.url == null
-                  ? AppColors.surfaceContainer
-                  : null,
-              backgroundImage: image == null
-                  ? widget.url == null
-                      ? svgProvider.Svg(AppImages.defaultCoachImage)
-                      : Image.network(widget.url ?? '').image
-                  : Image.file(image!).image,
+              backgroundColor: AppColors.surfaceContainer,
+              child: ClipOval(
+                child: SizedBox(
+                  width: 110.r,
+                  height: 110.r,
+                  child: image != null
+                      ? Image.file(image!, fit: BoxFit.cover)
+                      : _profileImage(),
+                ),
+              ),
             ),
             Container(
               width: 30,
@@ -72,6 +73,31 @@ class _UserImageWidgetState extends State<UserImageWidget> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _profileImage() {
+    final url = widget.url ?? '';
+    final fallback = SvgPicture.asset(
+      AppImages.defaultCoachImage,
+      fit: BoxFit.cover,
+    );
+
+    if (url.isEmpty) return fallback;
+
+    if (url.toLowerCase().contains('.svg')) {
+      return SvgPicture.network(
+        url,
+        fit: BoxFit.cover,
+        placeholderBuilder: (_) => fallback,
+        errorBuilder: (_, __, ___) => fallback,
+      );
+    }
+
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => fallback,
     );
   }
 }

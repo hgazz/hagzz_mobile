@@ -1,6 +1,7 @@
 import 'package:bookit/core/helper/router/rout_constants.dart';
 import 'package:bookit/core/util/constants/app_functions/app_functions.dart';
 import 'package:bookit/core/util/constants/app_strings/app_strings.dart';
+import 'package:bookit/core/util/constants/app_media/app_media.dart';
 import 'package:bookit/core/util/widgets/shimmer_widget/shimmer_widget.dart';
 import 'package:bookit/features/auth/model/api_models/sports_model.dart';
 import 'package:bookit/features/bottom_nav_bar/view_model/bottom_nav_bar_cubit.dart';
@@ -71,6 +72,16 @@ class SportItemWidget extends StatelessWidget {
                             height: 40.h,
                             sport?.icon ?? '',
                             fit: BoxFit.scaleDown,
+                            placeholderBuilder: (_) => SvgPicture.asset(
+                              AppMedia.sportAsset(sport?.name),
+                              width: 40.w,
+                              height: 40.h,
+                            ),
+                            errorBuilder: (_, __, ___) => SvgPicture.asset(
+                              AppMedia.sportAsset(sport?.name),
+                              width: 40.w,
+                              height: 40.h,
+                            ),
                           ),
                   ),
                 ),

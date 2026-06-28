@@ -41,17 +41,21 @@ class _TrainingCardWidgetState extends State<TrainingCardWidget> {
   String? endDate;
 
   formatDate() {
-    DateTime sDate = DateTime.parse(widget.trainingItem?.startDate ?? '');
-    DateTime eDate = DateTime.parse(widget.trainingItem?.endDate ?? '');
-    startDate = DateFormat('E,d MMM', CachedVariables.lang).format(sDate);
-    endDate = DateFormat('E,d MMM', CachedVariables.lang).format(eDate);
+    final sDate = DateTime.tryParse(widget.trainingItem?.startDate ?? '');
+    final eDate = DateTime.tryParse(widget.trainingItem?.endDate ?? '');
+    startDate = sDate == null
+        ? ''
+        : DateFormat('E,d MMM', CachedVariables.lang).format(sDate);
+    endDate = eDate == null
+        ? ''
+        : DateFormat('E,d MMM', CachedVariables.lang).format(eDate);
   }
 
   int detectHappenedTime() {
     DateTime now = DateTime.now();
-    DateTime startDate = DateTime.parse(widget.trainingItem?.startDate ?? '');
+    final startDate = DateTime.tryParse(widget.trainingItem?.startDate ?? '');
 
-    return startDate.compareTo(now);
+    return startDate?.compareTo(now) ?? 0;
   }
 
   @override

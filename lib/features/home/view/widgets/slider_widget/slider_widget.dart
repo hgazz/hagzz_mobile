@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/util/constants/app_colors/app_colors.dart';
+import '../../../../../core/util/constants/app_images/app_images.dart';
 import '../../../../../core/util/widgets/dot_indicator_widget/dot_indicator_widget.dart';
 
 class SliderWidget extends StatefulWidget {
@@ -47,13 +48,21 @@ class _SliderWidgetState extends State<SliderWidget> {
                               onTap: () {},
                               child: Container(
                                 margin: EdgeInsets.symmetric(horizontal: 15.w),
+                                clipBehavior: Clip.antiAlias,
                                 decoration: BoxDecoration(
-                                  // color: AppColors.borderColor,
-                                    borderRadius: BorderRadius.circular(28.r),
-                                    image: DecorationImage(
-                                        image: Image.network(item.logo ?? '')
-                                            .image,
-                                        fit: BoxFit.fill)),
+                                  color: AppColors.borderColor,
+                                  borderRadius: BorderRadius.circular(28.r),
+                                ),
+                                child: Image.network(
+                                  item.logo ?? '',
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  errorBuilder: (_, __, ___) => Image.asset(
+                                    AppImages.sliderImage,
+                                    fit: BoxFit.cover,
+                                    width: double.infinity,
+                                  ),
+                                ),
                               ),
                             ))
                         .toList()

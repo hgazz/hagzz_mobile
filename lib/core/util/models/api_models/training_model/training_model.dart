@@ -41,8 +41,8 @@ class TrainingModel {
     id = json['id'];
     name = json['name'];
     image = json['image'];
-    price = json['price'];
-    discount = json['discount_price'];
+    price = (json['price'] as num?)?.round();
+    discount = (json['discount_price'] as num?)?.round();
     startDate = json['start_date'];
     endDate = json['end_date'];
     isSaved = json['is_fav'];

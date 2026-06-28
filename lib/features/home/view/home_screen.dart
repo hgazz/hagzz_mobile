@@ -202,6 +202,33 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, state) {
           var cubit = HomeCubit.get(context);
           if (state is HomeErrorState) {
+            final isArabic = CachedVariables.lang == 'ar';
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.all(24.w),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.cloud_off_outlined, size: 48.w),
+                    SizedBox(height: 12.h),
+                    Text(
+                      isArabic
+                          ? 'تعذر تحميل البيانات. تحقق من الاتصال وحاول مرة أخرى.'
+                          : 'Unable to load data. Check your connection and try again.',
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16.h),
+                    FilledButton.icon(
+                      onPressed: () => cubit.getHomeData(context: context),
+                      icon: const Icon(Icons.refresh),
+                      label: Text(isArabic ? 'إعادة المحاولة' : 'Try again'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          if (state is! HomeSuccessState) {
             return LoadingWidget();
           }
           return SingleChildScrollView(
