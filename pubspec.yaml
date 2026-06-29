@@ -114,6 +114,7 @@ dev_dependencies:
 dependency_overrides:
   image_picker_android: 0.8.13+1
   flutter_plugin_android_lifecycle: 2.0.33
+  shared_preferences_android: 2.4.17
 
 flutter_launcher_icons:
   android: "launcher_icon"
