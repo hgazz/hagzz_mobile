@@ -1,32 +1,13 @@
 {
   "project_info": {
-    "project_number": "359987363803",
-    "project_id": "bokit-eafed",
-    "storage_bucket": "bokit-eafed.appspot.com"
+    "project_number": "68363700963",
+    "project_id": "bookinghagzz",
+    "storage_bucket": "bookinghagzz.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:359987363803:android:ef49f0260d9dda5e4ef1fe",
-        "android_client_info": {
-          "package_name": "com.bookit.bookit"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBXv89C8TJFHyzksnrKcHTxZbTsVYGDjNg"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:359987363803:android:5b5ff1e3cfcce29c4ef1fe",
+        "mobilesdk_app_id": "1:68363700963:android:42f925a890b524200253d6",
         "android_client_info": {
           "package_name": "com.unlimitedhagzz.hagzz"
         }
@@ -34,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBXv89C8TJFHyzksnrKcHTxZbTsVYGDjNg"
+          "current_key": "AIzaSyBHiv7sTOnAHJ4IKyKG8_D1JJmIHNbwl9E"
         }
       ],
       "services": {
