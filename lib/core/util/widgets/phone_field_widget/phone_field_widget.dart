@@ -4,17 +4,16 @@ import 'package:bookit/core/util/widgets/form_field_Widget/form_field_widget.dar
 import 'package:bookit/core/util/widgets/phone_field_widget/widget/select_country_widget/select_country_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl_phone_field/countries.dart';
 
 import '../../constants/app_colors/app_colors.dart';
-import '../../constants/app_images/app_images.dart';
 import '../../constants/app_validators/app_validators.dart';
 
 class PhoneFieldWidget extends StatefulWidget {
   final TextEditingController controller;
-  void Function(String countryCode) getCountryCode;
+  final void Function(String countryCode) getCountryCode;
 
-  PhoneFieldWidget({
+  const PhoneFieldWidget({
     super.key,
     required this.controller,
     required this.getCountryCode,
@@ -25,7 +24,9 @@ class PhoneFieldWidget extends StatefulWidget {
 }
 
 class _PhoneFieldWidgetState extends State<PhoneFieldWidget> {
-  String flagSelect = AppImages.egyptFlagSVG;
+  Country selectedCountry = countries.firstWhere(
+    (country) => country.code == 'EG',
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +38,16 @@ class _PhoneFieldWidgetState extends State<PhoneFieldWidget> {
           onTap: () {
             AppFunctions.showBottomSheet(
                 context: context,
-                height: MediaQuery.of(context).size.height * 0.35,
+                height: MediaQuery.of(context).size.height * 0.78,
                 child: SelectCountryWidget(
-                  onUserSelect: (value) {
+                  onUserSelect: (country) {
                     setState(() {
-                      flagSelect = value;
-                      widget.getCountryCode(
-                          value == AppImages.egyptFlagSVG ? "+2" : "+974");
+                      selectedCountry = country;
+                      widget.getCountryCode('+${country.fullCountryCode}');
                     });
                     AppFunctions.popNavigate(context: context);
                   },
-                  isEgypt: flagSelect == AppImages.egyptFlagSVG ? true : false,
+                  selectedCountryCode: selectedCountry.code,
                 ));
           },
           child: Padding(
@@ -55,7 +55,20 @@ class _PhoneFieldWidgetState extends State<PhoneFieldWidget> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                SvgPicture.asset(flagSelect),
+                Text(selectedCountry.flag,
+                    style: TextStyle(fontSize: 24.sp)),
+                SizedBox(width: 6.w),
+                Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Text(
+                    '+${selectedCountry.fullCountryCode}',
+                    style: TextStyle(
+                      fontSize: 13.sp,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.black,
+                    ),
+                  ),
+                ),
                 SizedBox(
                   width: 12.w,
                 ),
@@ -70,9 +83,11 @@ class _PhoneFieldWidgetState extends State<PhoneFieldWidget> {
         ),
         validator: (value) {
           return AppValidator.phoneValidator(
-              value: value,
-              context: context,
-              isEgypt: flagSelect == AppImages.egyptFlagSVG ? true : false);
+            value: value,
+            context: context,
+            minLength: selectedCountry.minLength,
+            maxLength: selectedCountry.maxLength,
+          );
         });
   }
 }

@@ -66,7 +66,7 @@ class EditProfileBottomsWidget extends StatelessWidget {
                                 (cubit.userModel?.data?.profile?.area?.id ?? 0))
                             .toString(),
                         countryCode:
-                            cubit.userModel?.data?.profile?.countryCode ?? "+2",
+                            cubit.userModel?.data?.profile?.countryCode ?? "+20",
                       ));
                     }
                     // List<String> sports = [];

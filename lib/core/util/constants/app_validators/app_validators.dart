@@ -13,7 +13,8 @@ class AppValidator {
   static String? phoneValidator({
     required String? value,
     required context,
-    required bool isEgypt,
+    int minLength = 6,
+    int maxLength = 15,
   }) {
     AppFunctions.logPrint(
         message:
@@ -24,7 +25,12 @@ class AppValidator {
     if (generalValidator(value: value ?? '', context: context) != null) {
       return generalValidator(value: value ?? '', context: context);
     } else {
-      if ((value?.replaceAll(" ", "").length ?? 0) < 6) {
+      final digits = value?.replaceAll(RegExp(r'\D'), '') ?? '';
+      final localPrefixOffset = digits.startsWith('0') ? 1 : 0;
+      final allowedMinLength = minLength + localPrefixOffset;
+      final allowedMaxLength = maxLength + localPrefixOffset;
+      if (digits.length < allowedMinLength ||
+          digits.length > allowedMaxLength) {
         return AppFunctions.translateText(
             text: AppStrings.phoneMustBeAtLeast6Number, context: context);
       } else {

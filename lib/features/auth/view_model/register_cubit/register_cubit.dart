@@ -88,7 +88,7 @@ class RegisterCubit extends Cubit<RegisterState> {
     });
   }
 
-  String countryCode = "+2";
+  String countryCode = "+20";
 
   void changeCountryCode(String countryCode) {
     this.countryCode = countryCode;
