@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bookit/core/helper/bloc_observer/my_bloc_observer.dart';
 import 'package:bookit/core/helper/cach/cached_keys.dart';
 import 'package:bookit/core/helper/cach/cached_variables.dart';
@@ -83,55 +85,64 @@ handleNotificationNavigation(RemoteMessage message) {
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await EasyLocalization.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runZonedGuarded(() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await EasyLocalization.ensureInitialized();
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  PlatformDispatcher.instance.onError = (error, stack) {
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+    PlatformDispatcher.instance.onError = (error, stack) {
+      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      return true;
+    };
+
+    await DioHelper.init();
+    await HiveHelper.init();
+    await CacheHelper.init();
+    Bloc.observer = MyBlocObserver();
+    String? fcm;
+    await FirebaseMessaging.instance.getToken().then((value) {
+      fcm = value;
+    }).catchError((error) {
+      AppFunctions.logPrint(message: 'Error getting FCM token: $error');
+    });
+    AppFunctions.logPrint(message: "FCM : $fcm");
+    if (CachedVariables.fcmToken == null) {
+      await CacheHelper.setData(key: CachedKeys.fcmToken, value: fcm ?? '');
+    }
+    CachedVariables.token = await CacheHelper.getData(key: CachedKeys.token);
+    CachedVariables.userId = await CacheHelper.getData(key: CachedKeys.userId);
+    CachedVariables.fcmToken =
+        await CacheHelper.getData(key: CachedKeys.fcmToken);
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      handleNotificationNavigation(message);
+    });
+    FirebaseMessaging.onMessage.listen((message) {
+      debugPrint(
+          '================================ FOREGROUND NOTIFICATION ================================');
+      debugPrint(message.data.toString());
+      NotificationService.initNotification();
+      NotificationService.dataAction(message);
+      AppFunctions.logPrint(
+          message: 'Notification title: ${message.notification?.title}');
+      AppFunctions.logPrint(
+          message: 'Notification body: ${message.notification?.body}');
+    });
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    runApp(
+      EasyLocalization(
+          supportedLocales: const [Locale('en', ''), Locale('ar', '')],
+          path: 'assets/lang',
+          fallbackLocale: const Locale('en', ''),
+          child: const AppRoot()),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      requestNotificationPermissions().catchError((error, stack) {
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: false);
+        AppFunctions.logPrint(message: 'Notification permission error: $error');
+      });
+    });
+  }, (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
-
-  await DioHelper.init();
-  await HiveHelper.init();
-  await CacheHelper.init();
-  await requestNotificationPermissions();
-  Bloc.observer = MyBlocObserver();
-  String? fcm;
-  await FirebaseMessaging.instance.getToken().then((value) {
-    fcm = value;
-  }).catchError((error) {
-    AppFunctions.logPrint(message: 'Error getting FCM token: $error');
   });
-  AppFunctions.logPrint(message: "FCM : $fcm");
-  if (CachedVariables.fcmToken == null) {
-    await CacheHelper.setData(key: CachedKeys.fcmToken, value: fcm ?? '');
-  }
-  CachedVariables.token = await CacheHelper.getData(key: CachedKeys.token);
-  CachedVariables.userId = await CacheHelper.getData(key: CachedKeys.userId);
-  CachedVariables.fcmToken =
-      await CacheHelper.getData(key: CachedKeys.fcmToken);
-  FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    handleNotificationNavigation(message);
-  });
-  FirebaseMessaging.onMessage.listen((message) {
-    debugPrint(
-        '================================ FOREGROUND NOTIFICATION ================================');
-    debugPrint(message.data.toString());
-    NotificationService.initNotification();
-    NotificationService.dataAction(message);
-    AppFunctions.logPrint(
-        message: 'Notification title: ${message.notification?.title}');
-    AppFunctions.logPrint(
-        message: 'Notification body: ${message.notification?.body}');
-  });
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp(
-    EasyLocalization(
-        supportedLocales: const [Locale('en', ''), Locale('ar', '')],
-        path: 'assets/lang',
-        fallbackLocale: const Locale('en', ''),
-        child: const AppRoot()),
-  );
 }

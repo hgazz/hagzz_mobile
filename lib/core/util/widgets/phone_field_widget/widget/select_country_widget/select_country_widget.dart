@@ -109,8 +109,7 @@ class _SelectCountryWidgetState extends State<SelectCountryWidget> {
                     ),
                     child: Row(
                       children: [
-                        Text(country.flag,
-                            style: TextStyle(fontSize: 25.sp)),
+                        Text(country.flag, style: TextStyle(fontSize: 25.sp)),
                         SizedBox(width: 12.w),
                         Expanded(
                           child: Text(
