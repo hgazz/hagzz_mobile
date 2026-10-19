@@ -54,9 +54,8 @@ android {
 
     defaultConfig {
         applicationId "com.unlimitedhagzz.hagzz"
-        // Keep compatibility with the currently published Play release.
-        // Flutter 3.44 supports API 23 but defaults new builds to API 24.
-        minSdk 23
+        // Google Play Automatic Protection requires Android API 24 or later.
+        minSdk 24
         targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

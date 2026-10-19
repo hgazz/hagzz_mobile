@@ -58,3 +58,10 @@ Flutter's automatic build-file migration was undone before the final build so th
 The owner confirmed production code 200 (1.0.22) and draft code 201 (1.0.23). The 48 candidate cannot update these versions. The replacement uses **1.0.24+202**, preserving the same catalog feature and minSdk 23. Use `docs/releases/Hagzz-Customer-1.0.24-202.aab` after verifying the matching version-specific metadata. The historical 48 build details above remain a record of the first candidate only.
 
 The production API 404 remains a separate deployment blocker. Resolve it and verify both country endpoints before rolling out this mobile release.
+
+
+## Automatic Protection SDK requirement
+
+Play Console rejected the API-23 candidate because Automatic Protection is enabled. The replacement **1.0.25+203** uses **minSdk 24**, supporting Android 7 and newer. Android 6/API 23 devices cannot install this new release. The existing signing configuration, package ID, catalog functionality and target SDK are unchanged. Use `docs/releases/Hagzz-Customer-1.0.25-203.aab`; candidates 48 and 202 are superseded. Automatic Protection was not disabled.
+
+A subsequent owner-provided server/browser screenshot confirmed API deployment: `/api/mobile-catalog?country=eg` returned status 200 with 15 academies and 45 programs, the route was listed inside the API container, and six brand banner records were created. This supersedes the earlier reported API 404 blocker; it is evidence from the owner's screenshot rather than a direct production request from this restricted environment.
