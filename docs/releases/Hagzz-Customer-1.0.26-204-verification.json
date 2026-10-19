@@ -1,0 +1,14 @@
+{
+  "version": "1.0.26+204",
+  "version_code": 204,
+  "version_name": "1.0.26",
+  "package": "com.unlimitedhagzz.hagzz",
+  "min_sdk": 24,
+  "target_sdk": 36,
+  "size_bytes": 86138927,
+  "sha256": "fe4b4f3c87bed48ecdcbc4d63f7d8217f4f4c993ea3d6c1c09112f7c0dd09be6",
+  "signature_verified": true,
+  "manifest_verified_from_aab": true,
+  "crashlytics_mapping_uploaded": false,
+  "published_to_google_play": false
+}

@@ -56,7 +56,7 @@ android {
         applicationId "com.unlimitedhagzz.hagzz"
         // Google Play Automatic Protection requires Android API 24 or later.
         minSdk 24
-        targetSdkVersion 35
+        targetSdkVersion 36
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
