@@ -1,3 +1,4 @@
+import 'widgets/mobile_catalog/mobile_catalog_screen.dart';
 import 'package:bookit/core/helper/cach/cached_variables.dart';
 import 'package:bookit/core/helper/router/rout_constants.dart';
 import 'package:bookit/core/util/constants/app_colors/app_colors.dart';
@@ -209,6 +210,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    const MobileCatalogEntry(),
+                    SizedBox(height: 16.h),
                     Icon(Icons.cloud_off_outlined, size: 48.w),
                     SizedBox(height: 12.h),
                     Text(
@@ -229,7 +232,10 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
           if (state is! HomeSuccessState) {
-            return LoadingWidget();
+            return Column(children: [
+              const MobileCatalogEntry(),
+              Expanded(child: LoadingWidget()),
+            ]);
           }
           return SingleChildScrollView(
             child: Column(
@@ -243,6 +249,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: 16.h,
                 ),
                 const SliderWidget(),
+                const SizedBox(height: 16),
+                const MobileCatalogEntry(),
                 SizedBox(
                   height: 16.h,
                 ),
