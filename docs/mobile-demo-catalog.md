@@ -51,3 +51,10 @@ JAR signature verification and ZIP integrity checks passed. This proves local ar
 The first release build stopped at `uploadCrashlyticsMappingFileRelease` because the external upload returned 403. The final local build used the existing Gradle wrapper with `bundleRelease`, three target platforms and `-x :app:uploadCrashlyticsMappingFileRelease`. Signing, minification and release lint remained enabled. The R8 mapping was retained at `/workspace/mobile-delivery/Hagzz-Customer-1.0.19-48-mapping.txt` for later upload from an environment with Firebase access.
 
 Flutter's automatic build-file migration was undone before the final build so that `minSdk 23` was preserved. The final processed manifest was checked for versionName 1.0.19, versionCode 48 and minSdk 23. No source changes to Gradle were retained.
+
+
+## Play Console version correction
+
+The owner confirmed production code 200 (1.0.22) and draft code 201 (1.0.23). The 48 candidate cannot update these versions. The replacement uses **1.0.24+202**, preserving the same catalog feature and minSdk 23. Use `docs/releases/Hagzz-Customer-1.0.24-202.aab` after verifying the matching version-specific metadata. The historical 48 build details above remain a record of the first candidate only.
+
+The production API 404 remains a separate deployment blocker. Resolve it and verify both country endpoints before rolling out this mobile release.
