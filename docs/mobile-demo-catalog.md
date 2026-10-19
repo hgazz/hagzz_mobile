@@ -37,3 +37,17 @@ Customer Flutter: mobile_catalog_test verifies country switching, EGP/QAR prices
 يلزم نشر كود API أولًا، ثم نشر إصدار العميل الجديد في Google Play ووصول التحديث إلى المستخدمين. النسخة القديمة المثبتة لا تستطيع إظهار شاشة Flutter جديدة لمجرد تحديث السيرفر. الملف الجديد لا يحتاج seed أو migration، ولا ينشئ حجوزات أو مدفوعات أو حسابات شركاء أو فروعًا مصطنعة في جداول التشغيل.
 
 ظهور هذا المحتوى للمستخدمين لا يعني تأكيد بيانات الأكاديميات؛ الشاشة تشرح أنها نسخة تجريبية، وتبقي الشعارات الرسمية غير المتحقق منها فارغة. الصور العامة موسومة بأنها صور توضيحية لحجّز وليست صور المنشآت. لا يوجد انتقال منها إلى الدفع أو الحجز أو المتابعة أو المفضلة.
+
+## Verified release candidate
+
+Local release build completed for version **1.0.19+48**, package `com.unlimitedhagzz.hagzz`, with minSdk **23** and armv7/arm64/x86_64 libraries. The signed AAB is 86,371,095 bytes; SHA-256:
+
+```
+d4f4a27305d4258e01bccac6ae77e4e51fce1024cdfd7ca4c3819a596bbc6e27
+```
+
+JAR signature verification and ZIP integrity checks passed. This proves local artifact integrity, not acceptance by Google Play or a match with its registered upload certificate.
+
+The first release build stopped at `uploadCrashlyticsMappingFileRelease` because the external upload returned 403. The final local build used the existing Gradle wrapper with `bundleRelease`, three target platforms and `-x :app:uploadCrashlyticsMappingFileRelease`. Signing, minification and release lint remained enabled. The R8 mapping was retained at `/workspace/mobile-delivery/Hagzz-Customer-1.0.19-48-mapping.txt` for later upload from an environment with Firebase access.
+
+Flutter's automatic build-file migration was undone before the final build so that `minSdk 23` was preserved. The final processed manifest was checked for versionName 1.0.19, versionCode 48 and minSdk 23. No source changes to Gradle were retained.
