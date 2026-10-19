@@ -2,7 +2,7 @@
 
 [Download the signed Google Play AAB](Hagzz-Customer-1.0.26-204.aab).
 
-Use **versionCode 204**, versionName **1.0.26**, **minSdk 24 (Android 7+)**. Google Play Automatic Protection rejected the previous API-23 candidate. This replacement raises the minimum SDK to 24 without disabling Automatic Protection. Codes 48, 202 and 203 are obsolete; do not upload them for this release.
+Use **versionCode 204**, versionName **1.0.26**, **minSdk 24 (Android 7+)**. Google Play Automatic Protection rejected the previous API-23 candidate. This replacement raises the minimum SDK to 24 without disabling Automatic Protection. Only candidate 204 and its verification metadata are retained here. Obsolete candidates 48, 202 and 203 have been removed from the current branch.
 
 Package: `com.unlimitedhagzz.hagzz`. This is the customer app, not the partner app. Deploy API commit a45373e or later before releasing it. The new Egypt/Qatar catalog is marked as demo and enables no bookings or payments. Resolve any production `/api/mobile-catalog` 404 before rollout.
 
