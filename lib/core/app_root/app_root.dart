@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:bookit/core/helper/analytics/analytics_service.dart';
 import 'package:bookit/core/util/constants/app_functions/app_functions.dart';
 import 'package:bookit/features/edit_profile/view_model/edit_profile_cubit.dart';
@@ -36,18 +37,30 @@ class AppRoot extends StatefulWidget {
 }
 
 class _AppRootState extends State<AppRoot> {
+  StreamSubscription<InternetStatus>? _connectionSubscription;
+
+  @override
+  void dispose() {
+    _connectionSubscription?.cancel();
+    super.dispose();
+  }
+
   @override
   void initState() {
-    InternetConnection().onStatusChange.listen((InternetStatus status) {
+    _connectionSubscription =
+        InternetConnection().onStatusChange.listen((InternetStatus status) {
       AppFunctions.logPrint(message: "Statussss: $status");
       switch (status) {
         case InternetStatus.connected:
           break;
         case InternetStatus.disconnected:
+          final currentContext = navigatorKey.currentContext;
+          if (!mounted || currentContext == null) return;
           AppAlert.error(
               message: AppFunctions.translateText(
-                  text: AppStrings.lostConnectionMessage, context: context),
-              context: context);
+                  text: AppStrings.lostConnectionMessage,
+                  context: currentContext),
+              context: currentContext);
           break;
       }
     });

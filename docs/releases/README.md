@@ -1,13 +1,27 @@
-# Customer app 1.0.26+204
+# Customer app 1.0.27+205 — internal-test candidate
 
-[Download the signed Google Play AAB](Hagzz-Customer-1.0.26-204.aab).
+[Download the signed Google Play AAB](Hagzz-Customer-1.0.27-205.aab).
 
-Use **versionCode 204**, versionName **1.0.26**, **minSdk 24 (Android 7+)**. Google Play Automatic Protection rejected the previous API-23 candidate. This replacement raises the minimum SDK to 24 without disabling Automatic Protection. Only candidate 204 and its verification metadata are retained here. Obsolete candidates 48, 202 and 203 have been removed from the current branch.
+Package: `com.unlimitedhagzz.hagzz`. Version code **205**, version name **1.0.27**; minSdk **24**, target/compile SDK **36**. Only the latest candidate and its verification metadata are retained in this directory.
 
-Package: `com.unlimitedhagzz.hagzz`. This is the customer app, not the partner app. Deploy API commit a45373e or later before releasing it. The new Egypt/Qatar catalog is marked as demo and enables no bookings or payments. Resolve any production `/api/mobile-catalog` 404 before rollout.
+## Startup fixes after the version 204 review rejection
 
-The AAB is a Google Play upload artifact, not an APK for direct installation. See the version-specific verification JSON for artifact hash, SDK and signing verification. The registered Play upload certificate must match. Firebase Crashlytics mapping upload was blocked by the build environment; the mapping was retained separately.
+Version 204 was rejected for loading/broken functionality. The exact reviewer failure has not been reproduced: no reviewer video, Android device/emulator, or production endpoint access was available here. These changes address concrete startup failure paths found in source:
 
-The binary is stored here because GitHub Release asset upload returned 403. No Google Play submission has been performed by this environment.
+- Paint a startup screen immediately, before asynchronous initialization.
+- Bound initialization to 20 seconds and show an Arabic/English retry screen on timeout or failure.
+- Retrieve the optional Firebase notification token after startup, with a 10-second timeout. Token retrieval or notification denial must not prevent app access. Do not automatically open Android settings after notification denial.
+- Read cached routing state before the splash decides where to navigate; check mounted state before delayed navigation.
+- Bound API connections to 15 seconds and send/receive waits to 20 seconds.
+- Guard the connectivity alert until a navigator exists, and cancel its subscription on disposal.
+- Preserve the Firebase background handler in release compilation.
 
-Version 204 targets API 36 (Android 16), compiles with API 36 and retains minSdk 24 for Play Automatic Protection. Raising the minimum from API 23 excludes Android 6 devices. The reported 2,028-device reduction must be checked in Play Console’s device comparison; it cannot be attributed entirely to minSdk without that report.
+Validation: five widget tests passed (startup first frame, failure/retry, timeout/late completion, catalog country switching, catalog failure/retry). Targeted startup analysis reported no issues. Broader analysis of touched storage/splash files retains four pre-existing informational lints. See the verification JSON for signed-AAB build validation.
+
+## Before production review
+
+Upload 205 to internal testing and install **from Google Play**. Verify a clean installation reaches onboarding, guest access reaches home, authenticated access works, denial of notifications does not block opening, offline launch has usable recovery, and connectivity restoration loads actual data. Test API 24 and a current Android device, then review Play's pre-launch report and Android vitals. Device testing and production API availability are **not verified by the cloud build**; the environment proxy denied API access with CONNECT 403.
+
+Retain old bundle 40 only if Play still needs it to cover older devices; exclude bundle 100 when Play reports it is fully covered by the new candidate. Recheck device coverage rather than assuming it is unchanged.
+
+No Google Play submission or publication has been performed by this environment. The existing API catalog remains demo data, with no booking/payment capability. Firebase Crashlytics mapping upload is excluded because the environment blocks that upload; the release remains signed and minified with release lint enabled. Preserve the mapping separately for upload from an authorized environment.

@@ -2,13 +2,10 @@ import 'package:bookit/core/util/constants/app_colors/app_colors.dart';
 import 'package:bookit/core/util/constants/app_images/app_images.dart';
 import 'package:bookit/core/util/constants/app_strings/app_strings.dart';
 import 'package:bookit/core/util/widgets/svg_image_widget/svg_image_widget.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../../../core/helper/cach/cach_helper.dart';
-import '../../../core/helper/cach/cached_keys.dart';
 import '../../../core/helper/cach/cached_variables.dart';
 import '../../../core/helper/router/rout_constants.dart';
 import '../../../core/util/constants/app_functions/app_functions.dart';
@@ -25,32 +22,12 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    getCachedData();
-    Future.delayed(
-        const Duration(
-          seconds: 2,
-        ),
-        () => AppFunctions.namedNavigateAndFinishTo(
-            context: context, navigatedScreen: determineNavigatedScreen()));
     super.initState();
-  }
-
-  getCachedData() async {
-    CachedVariables.onBoard =
-        await CacheHelper.getData(key: CachedKeys.onBoard);
-    await CacheHelper.deleteData(key: CachedKeys.phone);
-    CachedVariables.userId = await CacheHelper.getData(key: CachedKeys.userId);
-    CachedVariables.token = await CacheHelper.getData(key: CachedKeys.token);
-    CachedVariables.lang = await CacheHelper.getData(key: CachedKeys.lang);
-
-    setLocalization();
-  }
-
-  setLocalization() async {
-    if (CachedVariables.lang == null) {
-      final localization = EasyLocalization.of(context);
-      CachedVariables.lang = localization?.locale.languageCode;
-    }
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!mounted) return;
+      AppFunctions.namedNavigateAndFinishTo(
+          context: context, navigatedScreen: determineNavigatedScreen());
+    });
   }
 
   String determineNavigatedScreen() {

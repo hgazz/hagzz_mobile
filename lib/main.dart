@@ -18,11 +18,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'core/app_root/app_root.dart';
+import 'core/app_root/startup_gate.dart';
 import 'core/helper/cach/cach_helper.dart';
 import 'core/helper/dio/dio_helper.dart';
 import 'core/helper/notification_services/notification_services.dart';
 import 'features/session/model/local_model/checkout_model.dart';
 
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -31,10 +33,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 Future<void> requestNotificationPermissions() async {
-  final PermissionStatus status = await Permission.notification.request();
-  if (status.isPermanentlyDenied) {
-    await openAppSettings();
-  }
+  await Permission.notification.request();
 }
 
 handleNotificationNavigation(RemoteMessage message) {
@@ -84,36 +83,62 @@ handleNotificationNavigation(RemoteMessage message) {
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-void main() async {
-  runZonedGuarded(() async {
+void main() {
+  runZonedGuarded(() {
     WidgetsFlutterBinding.ensureInitialized();
-    await EasyLocalization.ensureInitialized();
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    runApp(StartupGate(
+      initialize: initializeApp,
+      app: EasyLocalization(
+        supportedLocales: const [Locale('en', ''), Locale('ar', '')],
+        path: 'assets/lang',
+        fallbackLocale: const Locale('en', ''),
+        child: const AppRoot(),
+      ),
+    ));
+  }, reportStartupError);
+}
 
-    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-    PlatformDispatcher.instance.onError = (error, stack) {
-      FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      return true;
-    };
+void reportStartupError(Object error, StackTrace stack) {
+  debugPrint('Application error: ${error.runtimeType}');
+  if (Firebase.apps.isNotEmpty) {
+    unawaited(FirebaseCrashlytics.instance
+        .recordError(error, stack, fatal: false)
+        .catchError((Object _) {}));
+  }
+}
 
-    await DioHelper.init();
-    await HiveHelper.init();
-    await CacheHelper.init();
-    Bloc.observer = MyBlocObserver();
-    String? fcm;
-    await FirebaseMessaging.instance.getToken().then((value) {
-      fcm = value;
-    }).catchError((error) {
-      AppFunctions.logPrint(message: 'Error getting FCM token: $error');
-    });
-    AppFunctions.logPrint(message: "FCM : $fcm");
-    if (CachedVariables.fcmToken == null) {
-      await CacheHelper.setData(key: CachedKeys.fcmToken, value: fcm ?? '');
-    }
-    CachedVariables.token = await CacheHelper.getData(key: CachedKeys.token);
-    CachedVariables.userId = await CacheHelper.getData(key: CachedKeys.userId);
-    CachedVariables.fcmToken =
-        await CacheHelper.getData(key: CachedKeys.fcmToken);
+Future<void> initializeApp() async {
+  await EasyLocalization.ensureInitialized();
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+  }
+
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stack) {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+    return true;
+  };
+
+  await DioHelper.init();
+  await HiveHelper.init();
+  await CacheHelper.init();
+  Bloc.observer = MyBlocObserver();
+  CachedVariables.token = await CacheHelper.getData(key: CachedKeys.token);
+  CachedVariables.userId = await CacheHelper.getData(key: CachedKeys.userId);
+  CachedVariables.fcmToken =
+      await CacheHelper.getData(key: CachedKeys.fcmToken);
+  CachedVariables.onBoard = await CacheHelper.getData(key: CachedKeys.onBoard);
+  CachedVariables.lang = await CacheHelper.getData(key: CachedKeys.lang);
+  await CacheHelper.deleteData(key: CachedKeys.phone);
+  // Notification token retrieval must never block the first screen.
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    unawaited(initializeNotifications());
+  });
+}
+
+Future<void> initializeNotifications() async {
+  try {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       handleNotificationNavigation(message);
     });
@@ -129,20 +154,16 @@ void main() async {
           message: 'Notification body: ${message.notification?.body}');
     });
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    runApp(
-      EasyLocalization(
-          supportedLocales: const [Locale('en', ''), Locale('ar', '')],
-          path: 'assets/lang',
-          fallbackLocale: const Locale('en', ''),
-          child: const AppRoot()),
-    );
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      requestNotificationPermissions().catchError((error, stack) {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: false);
-        AppFunctions.logPrint(message: 'Notification permission error: $error');
-      });
-    });
-  }, (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-  });
+
+    final fcm = await FirebaseMessaging.instance
+        .getToken()
+        .timeout(const Duration(seconds: 10));
+    if (fcm != null) {
+      await CacheHelper.setData(key: CachedKeys.fcmToken, value: fcm);
+      CachedVariables.fcmToken = fcm;
+    }
+    await requestNotificationPermissions();
+  } catch (error, stack) {
+    reportStartupError(error, stack);
+  }
 }

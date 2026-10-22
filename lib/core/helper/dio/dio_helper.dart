@@ -11,6 +11,9 @@ class DioHelper {
   static init() {
     dio = Dio(BaseOptions(
       baseUrl: EndPoints.baseUrl,
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 20),
+      sendTimeout: const Duration(seconds: 20),
       receiveDataWhenStatusError: true,
       followRedirects: false,
       validateStatus: (status) => true,

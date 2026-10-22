@@ -10,7 +10,9 @@ class HiveHelper {
   static init() async {
     final appDocumentDirectory = await getApplicationDocumentsDirectory();
     Hive.init(appDocumentDirectory.path);
-    Hive.registerAdapter(HiveSavedModelAdapter());
+    if (!Hive.isAdapterRegistered(HiveSavedModelAdapter().typeId)) {
+      Hive.registerAdapter(HiveSavedModelAdapter());
+    }
     if (Hive.isBoxOpen(HiveKeys.boxName)) {
       box = Hive.box(HiveKeys.boxName);
     } else {

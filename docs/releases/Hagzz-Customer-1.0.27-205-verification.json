@@ -1,0 +1,17 @@
+{
+  "version": "1.0.27+205",
+  "version_code": 205,
+  "version_name": "1.0.27",
+  "package": "com.unlimitedhagzz.hagzz",
+  "min_sdk": 24,
+  "target_sdk": 36,
+  "size_bytes": 86111564,
+  "sha256": "5f81511050b0a9f0f68cf879a3113d3fb21e8ebd66ef70cdf9117f735d344f09",
+  "signature_verified": true,
+  "manifest_verified_from_aab": true,
+  "widget_tests_passed": 5,
+  "device_launch_verified": false,
+  "production_api_verified": false,
+  "crashlytics_mapping_uploaded": false,
+  "published_to_google_play": false
+}
