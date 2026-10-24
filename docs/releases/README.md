@@ -1,4 +1,16 @@
-# Customer app 1.0.28+206 — internal-test candidate
+# Customer app 1.0.29+207 — identifier-free analytics and resilient startup
+
+[Download the signed 207 AAB](Hagzz-Customer-1.0.29-207.aab).
+
+Target/compile SDK **36**, min SDK **24**; all three Android ABIs retained. No traditional AD_ID, AdServices ID, attribution, or topics permissions in the final AAB. Advertising consent defaults are disabled; basic product analytics remains.
+
+Dart-side Firebase and telemetry no longer gate navigation. Full Flutter suite: **11 tests passed**. Release build, lint, merged-manifest policy gate, bundle structure, signing certificate match, and ELF64 16 KB load-segment alignment verified. [Verification JSON](Hagzz-Customer-1.0.29-207-verification.json) · [SHA-256](Hagzz-Customer-1.0.29-207.aab.sha256).
+
+Read the [207 changes, reproducible checks, and required Play transition](1.0.29-207.md). Existing bundle 40 and other active Play artifacts are immutable and must be considered separately when updating the advertising-ID declaration. Excluding 40 changes legacy device coverage. Install from Play internal testing and verify actual startup/navigation before production review; no device or Play-installed launch was verified here. Crashlytics mapping upload was blocked, so the mapping is retained in the build workspace. No Play Console change was performed.
+
+---
+
+## Previous candidate: 1.0.28+206
 
 [Download the signed 206 AAB](Hagzz-Customer-1.0.28-206.aab).
 

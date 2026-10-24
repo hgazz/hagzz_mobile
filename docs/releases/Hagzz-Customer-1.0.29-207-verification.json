@@ -1,0 +1,48 @@
+{
+  "package": "com.unlimitedhagzz.hagzz",
+  "version_name": "1.0.29",
+  "version_code": 207,
+  "compile_sdk": 36,
+  "target_sdk": 36,
+  "min_sdk": 24,
+  "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86_64"
+  ],
+  "advertising_permissions": [],
+  "advertising_flags_disabled": [
+    "google_analytics_adid_collection_enabled",
+    "google_analytics_default_allow_ad_storage",
+    "google_analytics_default_allow_ad_user_data",
+    "google_analytics_default_allow_ad_personalization_signals"
+  ],
+  "native_64_bit_elf_alignment": {
+    "base/lib/arm64-v8a/libapp.so": 65536,
+    "base/lib/arm64-v8a/libdartjni.so": 16384,
+    "base/lib/arm64-v8a/libdatastore_shared_counter.so": 16384,
+    "base/lib/arm64-v8a/libflutter.so": 65536,
+    "base/lib/x86_64/libapp.so": 65536,
+    "base/lib/x86_64/libdartjni.so": 16384,
+    "base/lib/x86_64/libdatastore_shared_counter.so": 16384,
+    "base/lib/x86_64/libflutter.so": 65536
+  },
+  "signature_verified": true,
+  "bundletool_validation_passed": true,
+  "signer_sha256": "F2:C9:95:E9:72:1C:4B:8E:8B:77:90:F6:C0:75:1B:CF:58:4A:03:54:45:53:B8:C6:6B:77:BE:94:10:1B:23:08",
+  "previous_signer_matched": true,
+  "size_bytes": 54351960,
+  "sha256": "01e3d7105dd47a29f9144be411d46d0d6c2d034aa676eebf77a5934561356a6e",
+  "device_and_play_validation": "Not evaluated by this artifact verifier",
+  "full_flutter_tests_passed": 11,
+  "analysis_errors": 0,
+  "analysis_warnings": 0,
+  "preexisting_analysis_infos": 5,
+  "old_configuration_rejected_by_stricter_project_policy": true,
+  "merged_manifest_policy_passed": true,
+  "minification_enabled": true,
+  "release_lint_passed": true,
+  "crashlytics_mapping_uploaded": false,
+  "device_launch_verified": false,
+  "published_to_google_play": false
+}

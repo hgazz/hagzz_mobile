@@ -42,11 +42,17 @@ class _AppRootState extends State<AppRoot> {
   @override
   void dispose() {
     _connectionSubscription?.cancel();
+    AnalyticsService.readiness.removeListener(_onAnalyticsReady);
     super.dispose();
+  }
+
+  void _onAnalyticsReady() {
+    if (mounted) setState(() {});
   }
 
   @override
   void initState() {
+    AnalyticsService.readiness.addListener(_onAnalyticsReady);
     _connectionSubscription =
         InternetConnection().onStatusChange.listen((InternetStatus status) {
       AppFunctions.logPrint(message: "Statussss: $status");
@@ -55,7 +61,9 @@ class _AppRootState extends State<AppRoot> {
           break;
         case InternetStatus.disconnected:
           final currentContext = navigatorKey.currentContext;
-          if (!mounted || currentContext == null) return;
+          if (!mounted || currentContext == null || !currentContext.mounted) {
+            return;
+          }
           AppAlert.error(
               message: AppFunctions.translateText(
                   text: AppStrings.lostConnectionMessage,
@@ -96,7 +104,9 @@ class _AppRootState extends State<AppRoot> {
             debugShowCheckedModeBanner: false,
             onGenerateRoute: AppRouter.generateRoute,
             initialRoute: RouteConstants.init,
-            navigatorObservers: [AnalyticsService.observer],
+            navigatorObservers: [
+              if (AnalyticsService.observer case final observer?) observer,
+            ],
             localizationsDelegates: context.localizationDelegates,
             supportedLocales: context.supportedLocales,
             locale: context.locale,

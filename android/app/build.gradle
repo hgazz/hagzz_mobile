@@ -1,3 +1,6 @@
+import com.android.build.api.artifact.SingleArtifact
+import javax.xml.parsers.DocumentBuilderFactory
+
 plugins {
     id "com.android.application"
     // START: FlutterFire Configuration
@@ -77,12 +80,76 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            firebaseCrashlytics {
+                // Keep uploads enabled normally; allow explicit offline builds.
+                mappingFileUploadEnabled = providers.gradleProperty("crashlyticsMappingUploadEnabled")
+                    .map { it.toBoolean() }.getOrElse(true)
+            }
         }
     }
 }
 
 flutter {
     source '../..'
+}
+
+// Validate the merged artifact, including permissions contributed by SDKs.
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        def suffix = variant.name.capitalize()
+        def mergedManifest = variant.artifacts.get(SingleArtifact.MERGED_MANIFEST.INSTANCE)
+        def verifyPolicy = tasks.register("verify${suffix}AdvertisingPolicy") {
+            group = "verification"
+            description = "Verify API target and identifier-free analytics in the release manifest"
+            inputs.file(mergedManifest)
+            doLast {
+                def namespace = "http://schemas.android.com/apk/res/android"
+                def factory = DocumentBuilderFactory.newInstance()
+                factory.setNamespaceAware(true)
+                def manifest = factory.newDocumentBuilder().parse(mergedManifest.get().asFile)
+                def forbidden = [
+                    "com.google.android.gms.permission.AD_ID",
+                    "android.permission.ACCESS_ADSERVICES_AD_ID",
+                    "android.permission.ACCESS_ADSERVICES_ATTRIBUTION",
+                    "android.permission.ACCESS_ADSERVICES_TOPICS"
+                ]
+                def violations = []
+                ["uses-permission", "uses-permission-sdk-23", "uses-permission-sdk-m"].each { tag ->
+                    def permissions = manifest.getElementsByTagName(tag)
+                    for (int i = 0; i < permissions.length; i++) {
+                        def name = permissions.item(i).getAttributeNS(namespace, "name")
+                        if (forbidden.contains(name)) violations.add(name)
+                    }
+                }
+                def flags = [:].withDefault { [] }
+                def metadata = manifest.getElementsByTagName("meta-data")
+                for (int i = 0; i < metadata.length; i++) {
+                    def node = metadata.item(i)
+                    flags[node.getAttributeNS(namespace, "name")].add(node.getAttributeNS(namespace, "value"))
+                }
+                [
+                    "google_analytics_adid_collection_enabled",
+                    "google_analytics_default_allow_ad_storage",
+                    "google_analytics_default_allow_ad_user_data",
+                    "google_analytics_default_allow_ad_personalization_signals"
+                ].each { flag ->
+                    if (flags[flag] != ["false"]) violations.add("${flag} must explicitly be false")
+                }
+                def sdk = manifest.getElementsByTagName("uses-sdk").item(0)
+                if (sdk == null || !sdk.getAttributeNS(namespace, "targetSdkVersion").isInteger() ||
+                        sdk.getAttributeNS(namespace, "targetSdkVersion").toInteger() < 36) {
+                    violations.add("targetSdkVersion must be at least 36")
+                }
+                if (!violations.isEmpty()) {
+                    throw new GradleException("Release policy check failed: " + violations.join(", "))
+                }
+                logger.lifecycle("Release policy verified: API 36+, advertising permissions absent, ad collection disabled")
+            }
+        }
+        tasks.matching { it.name in ["package${suffix}", "package${suffix}Bundle", "bundle${suffix}", "assemble${suffix}"] }.configureEach {
+            dependsOn(verifyPolicy)
+        }
+    }
 }
 
 dependencies {

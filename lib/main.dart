@@ -18,7 +18,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'core/app_root/app_root.dart';
+import 'core/app_root/app_bootstrap.dart';
 import 'core/app_root/startup_gate.dart';
+import 'core/helper/analytics/analytics_service.dart';
 import 'core/helper/cach/cach_helper.dart';
 import 'core/helper/dio/dio_helper.dart';
 import 'core/helper/notification_services/notification_services.dart';
@@ -86,8 +88,13 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() {
   runZonedGuarded(() {
     WidgetsFlutterBinding.ensureInitialized();
+    final bootstrap = AppBootstrap(
+      initializeLocal: initializeLocalServices,
+      initializeOptional: initializeOptionalServices,
+      onOptionalError: reportStartupError,
+    );
     runApp(StartupGate(
-      initialize: initializeApp,
+      initialize: bootstrap.initialize,
       app: EasyLocalization(
         supportedLocales: const [Locale('en', ''), Locale('ar', '')],
         path: 'assets/lang',
@@ -98,28 +105,21 @@ void main() {
   }, reportStartupError);
 }
 
-void reportStartupError(Object error, StackTrace stack) {
+void reportStartupError(Object error, StackTrace stack, {bool fatal = false}) {
   debugPrint('Application error: ${error.runtimeType}');
-  if (Firebase.apps.isNotEmpty) {
-    unawaited(FirebaseCrashlytics.instance
-        .recordError(error, stack, fatal: false)
-        .catchError((Object _) {}));
+  try {
+    if (Firebase.apps.isNotEmpty) {
+      unawaited(FirebaseCrashlytics.instance
+          .recordError(error, stack, fatal: fatal)
+          .catchError((Object _) {}));
+    }
+  } catch (_) {
+    // Error reporting is optional, including while Firebase is unavailable.
   }
 }
 
-Future<void> initializeApp() async {
+Future<void> initializeLocalServices() async {
   await EasyLocalization.ensureInitialized();
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform);
-  }
-
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
-  PlatformDispatcher.instance.onError = (error, stack) {
-    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-    return true;
-  };
-
   await DioHelper.init();
   await HiveHelper.init();
   await CacheHelper.init();
@@ -131,10 +131,28 @@ Future<void> initializeApp() async {
   CachedVariables.onBoard = await CacheHelper.getData(key: CachedKeys.onBoard);
   CachedVariables.lang = await CacheHelper.getData(key: CachedKeys.lang);
   await CacheHelper.deleteData(key: CachedKeys.phone);
-  // Notification token retrieval must never block the first screen.
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    unawaited(initializeNotifications());
-  });
+}
+
+Future<void> initializeOptionalServices() async {
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+  }
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    reportStartupError(details.exception, details.stack ?? StackTrace.current,
+        fatal: true);
+  };
+  PlatformDispatcher.instance.onError = (error, stack) {
+    reportStartupError(error, stack, fatal: true);
+    return true;
+  };
+  // Analytics consent/configuration cannot delay notification setup or the UI.
+  unawaited(AnalyticsService.initialize()
+      .catchError((Object error, StackTrace stack) {
+    reportStartupError(error, stack);
+  }));
+  unawaited(initializeNotifications());
 }
 
 Future<void> initializeNotifications() async {
