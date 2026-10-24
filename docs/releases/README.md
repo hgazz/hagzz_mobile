@@ -1,4 +1,16 @@
-# Customer app 1.0.27+205 — internal-test candidate
+# Customer app 1.0.28+206 — internal-test candidate
+
+[Download the signed 206 AAB](Hagzz-Customer-1.0.28-206.aab).
+
+Package `com.unlimitedhagzz.hagzz`, target/compile SDK **36**, min SDK **24**. Bundle structure and signature verified; signing certificate matches 205. Seven startup/catalog widget tests passed, with no issues in targeted startup analysis.
+
+This candidate retains the notification startup fix from 205 and fixes first-frame initialization and timeout/retry state handling. See the [startup investigation and Play testing checklist](1.0.28-206.md), [verification metadata](Hagzz-Customer-1.0.28-206-verification.json), and [SHA-256](Hagzz-Customer-1.0.28-206.aab.sha256).
+
+Install from Google Play internal testing before production submission. Device startup and the reviewer ANR are not verified here. Crashlytics mapping upload was blocked by HTTP 403; the mapping is retained in the build workspace. No Google Play submission or publication was performed.
+
+---
+
+## Previous candidate: 1.0.27+205
 
 [Download the signed Google Play AAB](Hagzz-Customer-1.0.27-205.aab).
 

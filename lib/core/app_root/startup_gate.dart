@@ -17,15 +17,30 @@ class StartupGate extends StatefulWidget {
 
 class _StartupGateState extends State<StartupGate> {
   late Future<void> _startup;
+  Future<void>? _initialization;
 
   @override
   void initState() {
     super.initState();
-    _startup = _initialize();
+    _startup = _initializeAfterFirstFrame();
   }
 
-  Future<void> _initialize() =>
-      Future.sync(widget.initialize).timeout(widget.timeout);
+  Future<void> _initializeAfterFirstFrame() async {
+    // Let Android dismiss its launch screen before starting plugin/storage work.
+    await WidgetsBinding.instance.endOfFrame;
+    if (!mounted) return;
+    await _initialize();
+  }
+
+  Future<void> _initialize() {
+    // A timeout does not cancel the underlying plugin calls. Reuse that work on
+    // retry so Firebase/Hive/storage are not initialized concurrently.
+    final initialization =
+        _initialization ??= Future.sync(widget.initialize).whenComplete(() {
+      _initialization = null;
+    });
+    return initialization.timeout(widget.timeout);
+  }
 
   @override
   Widget build(BuildContext context) => FutureBuilder<void>(
@@ -38,6 +53,8 @@ class _StartupGateState extends State<StartupGate> {
           final arabic =
               WidgetsBinding.instance.platformDispatcher.locale.languageCode ==
                   'ar';
+          final failed = snapshot.connectionState == ConnectionState.done &&
+              snapshot.hasError;
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             home: Scaffold(
@@ -50,7 +67,7 @@ class _StartupGateState extends State<StartupGate> {
                     style:
                         TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 24),
-                if (!snapshot.hasError) ...[
+                if (!failed) ...[
                   const CircularProgressIndicator(),
                   const SizedBox(height: 16),
                   Text(arabic ? 'جارٍ فتح التطبيق…' : 'Opening Hagzz…'),

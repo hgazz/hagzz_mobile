@@ -6,6 +6,23 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   const ready = MaterialApp(home: Text('Application ready'));
 
+  testWidgets('initialization starts after the loading screen is laid out',
+      (tester) async {
+    final pending = Completer<void>();
+    var loadingScreenWasLaidOut = false;
+    await tester.pumpWidget(StartupGate(
+        initialize: () {
+          loadingScreenWasLaidOut =
+              tester.getSize(find.byType(CircularProgressIndicator)).height > 0;
+          return pending.future;
+        },
+        app: ready));
+    expect(loadingScreenWasLaidOut, isTrue);
+    pending.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Application ready'), findsOneWidget);
+  });
+
   testWidgets('first frame appears while initialization is pending',
       (tester) async {
     final pending = Completer<void>();
@@ -50,5 +67,28 @@ void main() {
     await tester.pumpAndSettle();
     // A late completion must not silently replace the recovery screen.
     expect(find.text('Try again'), findsOneWidget);
+  });
+
+  testWidgets('retry after timeout does not overlap unfinished initialization',
+      (tester) async {
+    final pending = Completer<void>();
+    var attempts = 0;
+    await tester.pumpWidget(StartupGate(
+        initialize: () {
+          attempts++;
+          return pending.future;
+        },
+        app: ready,
+        timeout: const Duration(seconds: 2)));
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Try again'));
+    await tester.pump();
+    expect(attempts, 1);
+    expect(find.text('Opening Hagzz…'), findsOneWidget);
+    pending.complete();
+    await tester.pumpAndSettle();
+    expect(find.text('Application ready'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

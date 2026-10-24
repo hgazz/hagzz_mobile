@@ -1,0 +1,27 @@
+{
+  "package": "com.unlimitedhagzz.hagzz",
+  "version_name": "1.0.28",
+  "version_code": 206,
+  "min_sdk": 24,
+  "compile_sdk": 36,
+  "target_sdk": 36,
+  "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86_64"
+  ],
+  "size_bytes": 54358766,
+  "sha256": "e5ff2ac05e74c71bc8dc5bf69b8f48fbeb002981ab32e3c0ef36f9df8ac71c74",
+  "signature_verified": true,
+  "bundletool_validation_passed": true,
+  "matches_release_205_signing_certificate": true,
+  "widget_tests_passed": 7,
+  "targeted_analysis": "no issues",
+  "minification_enabled": true,
+  "release_lint_passed": true,
+  "crashlytics_mapping_uploaded": false,
+  "device_launch_verified": false,
+  "play_installed_startup_verified": false,
+  "production_api_verified": false,
+  "published_to_google_play": false
+}
